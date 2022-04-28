@@ -1,2 +1,4 @@
-# ISMRM2022_VSASL_Bloch_Simulations
-ISMRM 2022 Velocity Selective ASL tutorial
+# ISMRM2022 VSASL Bloch Simulations
+
+This is the code used for the Velocity Selective ASL Bloch simulation tutorial at ISMRM 2022
+

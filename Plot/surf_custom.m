@@ -36,6 +36,9 @@ for ii = 1 : nAx
         case 4; h = surf(p.data1{ii}, p.data2{ii}, p.data3{ii}, p.data4{ii});
     end
     
+    % Choose colourmap
+    colormap(p.color{ii});
+    
     % Colourmap limits
     if isnumeric(p.clim{ii})
         caxis(p.clim{ii});
@@ -107,7 +110,7 @@ end
         p.addParameter('xlabel'       , {''}       , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('ylabel'       , {''}       , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('title'        , {''}       , @(x) iscell(x) && ischar(x{1}));
-        p.addParameter('color'        , {'grey'}   , @(x) iscell(x) && ischar(x{1}));
+        p.addParameter('color'        , {'default'}, @(x) iscell(x) && ischar(x{1}));
         p.addParameter('colorbar'     , {'on'}     , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('colorbarlabel', {''}       , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('xscale'       , {'linear'} , @(x) iscell(x) && ischar(x{1}));

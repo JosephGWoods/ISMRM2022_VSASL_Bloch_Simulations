@@ -10,10 +10,10 @@ This tutorial was designed and written by [Joseph G. Woods](https://orcid.org/00
 
 ## Code Contributors
 
-Joseph G. Woods (University of Oxford)
-Dapeng Liu (Johns Hopkins University)
-Eric C. Wong (University of California San Diego)
-Jia Guo (University of California Riverside)
+Joseph G. Woods (University of Oxford)  
+Dapeng Liu (Johns Hopkins University)   
+Eric C. Wong (University of California San Diego)   
+Jia Guo (University of California Riverside)    
 
 ## References
 

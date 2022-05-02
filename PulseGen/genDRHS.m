@@ -1,6 +1,6 @@
-%% Function to generate a DRHS velocity selective module
+%% Function to generate a double-refocussed hyperbolic-secant velocity selective module
 %
-% [B1, gTag, gCont, T] = genDRHSNS(T, bSection)
+% [B1, gTag, gCont, T] = genDRHS(T, bSection)
 %
 % in:
 %      T        - struct containing velocity selective module timings (ms
@@ -22,17 +22,15 @@
 %      GUP    - gradient update time (µs)
 %      RFUP   - RF update time (µs)
 %      Gmax   - max gradient amplitude (units/cm)
-%      B1max  - max RF amplitude (units)
-%      units  - RF and gradient units ('G', 'T', 'Hz')
-%      f1     - flat top time for G1
-%      f2     - flat top time for G2
-%      f3     - flat top time for G3
-%      f4     - flat top time for G4
-%      nGrad  - number of VS gradients
-%      r      - rise time (keep constant)
+%      SRmax  - max gradient slew rate (units/cm/s
+%      B1max  - max B1+ amplitude (units)
+%      units  - B1+ and gradient units ('G', 'T', 'Hz')
+%      f      - gradient flat top time
+%      r      - gradient rise time
 %      ta[n]  - start of trapezoid attack time for nth gradient
 %      td[n]  - end of trapezoid decay time for nth gradient
-%      RF     - duration of excitation pulse
+%      RFe    - duration of excitation pulse
+%      RFe_2  - isodelay of excitation pulse
 %      RF2    - start time of last excitation pulse
 %      RFr    - duration of refocussing pulse
 %      RFr1   - start time of 1st refocussing pulse
@@ -42,7 +40,7 @@
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
 
-function [B1, gTag, gCont, T] = genDRHSNS(T, bSection)
+function [B1, gTag, gCont, T] = genDRHS(T, bSection)
 
 if ~exist('T'       ,'var') || isempty(T);        error('T must be specified!'); end
 if ~exist('bSection','var') || isempty(bSection); bSection = 'DRHS'; end
@@ -75,11 +73,11 @@ if contains(bSection,'excite') || strcmp(bSection,'DRHS')
     phase2 = 180; % Phase of flip up
     
     % Generate the hard pulses
-    T.RFe = 1e-3 * ceil(1e6*deg2rad(FA)/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % ms
+    T.RFe = 1e-3 * ceil(1e6*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % ms
     T.B1_excite1 = genhard(FA, phase1, [], T.B1max, T.RFUP, T.units);
     T.B1_excite2 = genhard(FA, phase2, [], T.B1max, T.RFUP, T.units);
     
-    % Iso-delay (off-resonance robustness)
+    % Approximate isodelay (for off-resonance robustness)
     vsisd = 1.3125;
     T.RFe_2 = T.RFe - RUP_GRD_ms(T.RFe/2/vsisd);
 
@@ -90,13 +88,16 @@ if contains(bSection,'excite') || strcmp(bSection,'DRHS')
 end
 
 %% Generate the HS refocussing pulses
+% Uses hyperbolic-secant pulses which have been VERSEd so that their
+% amplitude is a cos^0.2(t) window, for t in (-π/2,π/2) (see Wong et al.
+% MRM 2006 http://doi.wiley.com/10.1002/mrm.20906)
 
 if contains(bSection,'refocus') || strcmp(bSection,'DRHS')
 
     beta  = 700.0;    % rad/s
     mu    = 5.96;     % shaping
     cexp  = 0.2;      % cosine exponent
-    phase = [-90,90]; % Initial phase of refocussing pulses
+    phase = [-90,90]; % Initial phase of refocussing pulses (180° phase between them)
     
     [rho1, theta1, res] = gensechNS(beta, mu, T.RFUP, cexp, phase(1));
     [rho2, theta2, ~  ] = gensechNS(beta, mu, T.RFUP, cexp, phase(2));
@@ -105,10 +106,10 @@ if contains(bSection,'refocus') || strcmp(bSection,'DRHS')
     T.B1_refocus(:,1) = T.B1max * rho1 .* exp(1i * theta1); % abs(B1) and angle(B1)
     T.B1_refocus(:,2) = T.B1max * rho2 .* exp(1i * theta2); % abs(B1) and angle(B1)
     
-    % Generate the 90° phase increments (Liu et al. MRM 2021)
-    T.B1_refocus2 = T.B1_refocus * exp(1i * deg2rad( 90));
-    T.B1_refocus3 = T.B1_refocus * exp(1i * deg2rad(180)); 
-    T.B1_refocus4 = T.B1_refocus * exp(1i * deg2rad(270));
+    % Generate the 90° phase increments (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
+    T.B1_refocus2 = T.B1_refocus * exp(1i *  90*pi/180);
+    T.B1_refocus3 = T.B1_refocus * exp(1i * 180*pi/180);
+    T.B1_refocus4 = T.B1_refocus * exp(1i * 270*pi/180);
     
 end
 

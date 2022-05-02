@@ -22,7 +22,7 @@ T2      = inf;           % transverse relaxation time (s)
 %% Double-Refocussed Hyperbolic-Secant (DRHS) module
 
 vsType = 'DRHS';
-% vsType = 'DRHT'; % ADD
+% vsType = 'DRHT';
 % vsType = 'BIR4';
 % vsType = 'BIR8';
 % vsType = 'FTVSI';

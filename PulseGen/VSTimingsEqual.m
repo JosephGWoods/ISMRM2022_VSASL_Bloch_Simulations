@@ -14,11 +14,11 @@
 %      GUP    - gradient update time (µs)
 %      RFUP   - RF update time (µs)
 %      Gmax   - max gradient amplitude (units/cm)
-%      B1max  - max RF amplitude (units)
-%      units  - RF and gradient units ('G', 'T', 'Hz')
-%      r      - rise time of VS gradients
-%      f      - flat top time for VS gradients
-%      nGrad  - number of VS gradients
+%      SRmax  - max gradient slew rate (units/cm/s
+%      B1max  - max B1+ amplitude (units)
+%      units  - B1+ and gradient units ('G', 'T', 'Hz')
+%      f      - gradient flat top time
+%      r      - gradient rise time
 %      ta[n]  - start of trapezoid attack time for nth gradient
 %      td[n]  - end of trapezoid decay time for nth gradient
 %      RF     - duration of excitation pulse
@@ -26,7 +26,8 @@
 %      RFr    - duration of refocussing pulse
 %      RFr1   - start time of 1st refocussing pulse
 %      RFr2   - start time of 2nd refocussing pulse
-%      RFrpad - time between the HS pulses
+%      RFr3   - start time of 3rd refocussing pulse
+%      RFrpad - time between the HS/HT pulses (DRHS/DRHT)
 %      All timings in ms
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
@@ -37,7 +38,7 @@ m1Target   = 1e12 * pi/(T.gamrad*2*T.Vcut); % 1st gradient moment to achieve Vcu
 RUP_GRD_ms = func.RUP_GRD_ms;
 
 dt  = T.GUP;                            % gradient update time
-T.r = RUP_GRD_ms(abs(T.Gmax/T.SR*1e3)); % gradient rise/ramp time
+T.r = RUP_GRD_ms(abs(T.Gmax/T.SRmax*1e3)); % gradient rise/ramp time
 R   = T.r*1e3/dt;                       % convert to rise time to number of gradient raster points
 radicand = 0;
 
@@ -48,41 +49,41 @@ radicand = 0;
 % TODO: add comments and equations to clearly explain how the flat top time
 %       is being calculated.
 
-if contains(func.vsType,'DRHS')
+if strcmpi(func.vsType,'DRHS') || strcmpi(func.vsType,'DRHT')
     p        = (4*(T.vspad1+T.vspad2)+2*T.RFr+4*T.RFe_2+8*T.r)*1e3/dt; % In µs
     radicand = 16*R*R-8*R*p+p*p+16*m1Target/(dt*dt*T.Gmax);
     optF     = ceil((-4*R-p+sqrt(radicand))/8); % Solve the m1tmp equation for F
-    if strcmp(func.gradAmp,'scale')
+    if strcmpi(func.gradAmp,'scale')
         optF = max(1,optF);
     end
     T.Gmax   = m1Target/(dt*dt*(R + optF)*(p + 4*optF));
     
-elseif strcmp(func.vsType,'BIR8')
+elseif strcmpi(func.vsType,'BIR8')
     % Due to symmetry can just calculate for one pair of the graients
     m1       = m1Target/2;
     p        = 2*(T.vspad1+T.vspad2+T.RFr+T.r)*1e3/dt; % In µs
     radicand = 8*m1 + dt*dt*T.Gmax*p*p;
     optF     = ceil((-(dt*sqrt(T.Gmax)*(p + 4*R)) + sqrt(radicand))/(4*dt*sqrt(T.Gmax))); % Solve the m1tmp equation for F
-    if strcmp(func.gradAmp,'scale')
+    if strcmpi(func.gradAmp,'scale')
         optF = max(1,optF);
     end
     T.Gmax   = m1/(dt*dt*(R + optF)*(p + 2*R + 2*optF));
     
-elseif strcmp(func.vsType,'BIR4')
+elseif strcmpi(func.vsType,'BIR4')
     p = ceil((T.vspad1+T.vspad2+T.RFr)*1e3/dt);
     radicand = 4*m1Target + dt*dt*T.Gmax*(p+R)*(p+R);
     optF = ceil((-(dt*sqrt(T.Gmax)*(p + 3*R)) + sqrt(radicand))/(2*dt*sqrt(T.Gmax)));
-    if strcmp(func.gradAmp,'scale')
+    if strcmpi(func.gradAmp,'scale')
         optF = max(1,optF);
     end
     T.Gmax = m1Target/(dt*dt*(R + optF)*(p + 2*R + optF));
     
-elseif strcmp(func.vsType,'FTVSI')
+elseif strcmpi(func.vsType,'FTVSI')
     A    = pi/(2*T.Vcut*T.gamrad*T.Nk*T.Gmax);
     B    = (T.vspad1+T.vspad2+T.RFr/2+T.RFe_2)*1e-3; % in s
     f    = (sqrt(2*A+(B+T.r*1e-3)^2)-B-3*T.r*1e-3)/2;  % in s
     optF = ceil(f*1e6/dt); % Gradient raster points
-    if strcmp(func.gradAmp,'scale')
+    if strcmpi(func.gradAmp,'scale')
         optF = max(1,optF);
     end
     delta = T.r*1e-3 + optF*dt*1e-6;
@@ -99,10 +100,11 @@ end
 T.f = RUP_GRD_ms( optF*dt*1e-3 ); % In ms
 
 % Now calculate the remaining timings
-if     strcmp(func.vsType,'DRHS');  T = gradtimingsDRHS(T);
-elseif strcmp(func.vsType,'BIR8');  T = gradtimingsBIR8(T);
-elseif strcmp(func.vsType,'BIR4');  T = gradtimingsBIR4(T);
-elseif strcmp(func.vsType,'FTVSI'); T = gradtimingsFTVSI(T);
+if     strcmpi(func.vsType,'DRHS');  T = gradtimingsDRHS(T);
+elseif strcmpi(func.vsType,'DRHT');  T = gradtimingsDRHS(T);
+elseif strcmpi(func.vsType,'BIR8');  T = gradtimingsBIR8(T);
+elseif strcmpi(func.vsType,'BIR4');  T = gradtimingsBIR4(T);
+elseif strcmpi(func.vsType,'FTVSI'); T = gradtimingsFTVSI(T);
 end
 
     function [T] = gradtimingsDRHS(T)

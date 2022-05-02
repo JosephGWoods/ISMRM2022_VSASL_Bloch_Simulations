@@ -14,8 +14,8 @@
 %      theta - RF phase (in rad)
 %      res   - RF resolution
 %
-% From Eric C. Wong's sequence code
-% Converted from CFMRIs spep code by Joseph G. Woods, CFMRI, UCSD, May 2020
+% Originally written by Eric C. Wong CFMRI, UCSD
+% Edited by Joseph G. Woods, CFMRI, UCSD, May 2020
 
 function [rho, theta, res] = gensechNS(beta, mu, dtus, cexp, initph)
 

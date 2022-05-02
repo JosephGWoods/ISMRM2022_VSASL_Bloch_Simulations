@@ -18,13 +18,13 @@
 % Originally written by Eric C. Wong CFMRI, UCSD
 % Edited by Joseph G. Woods, CFMRI, UCSD, June 2020
 
-function [rho, theta, nbir] = genbir(wmax, zeta, tkap, pw, dtus)
+function [rho, theta, n] = genbir(wmax, zeta, tkap, pw, dtus)
 
-dt   = 1.e-6 * dtus;         % convert to seconds
-dur  = 1.e-3 * pw;           % convert to seconds
-kap  = atan(tkap);
-w    = wmax * 2 * pi * dt;   % convert to phase per dt
-n    = round(dur/dt);
+dt  = 1.e-6 * dtus;       % convert to seconds
+dur = 1.e-3 * pw;         % convert to seconds
+kap = atan(tkap);
+w   = wmax * 2 * pi * dt; % convert to phase per dt
+n   = round(dur/dt);
 
 % Initialise the arrays
 rho.birleft    = zeros(  n, 1);
@@ -44,13 +44,13 @@ for ii = 0:(n-1)
     theta.birleft(ii+1) = modp(ptmp);       % RF phase
     theta.birmid(n-ii)  = modp(ptmp+pi);    % RF phase
     
+    % Update phase
     pstep = w * tan(kap*t) / tkap;
     ptmp  = ptmp + pstep;
     
 end
-nbir = n;
 
-
+% Copy RF amplitude and phase to reverse AHP and AFP
 for ii = 0:(n-1)
     rho.birmid(ii+1)     = rho.birleft(n-ii);
     rho.birmid(n+ii+1)   = rho.birleft(ii+1);

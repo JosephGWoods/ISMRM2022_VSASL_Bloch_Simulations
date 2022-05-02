@@ -36,7 +36,8 @@
 %       mx,my,mz - (PxFxV) arrays of the resulting magnetization components
 %                  at each position and frequency.
 %
-%   B. Hargreaves   Nov 2003. (Downloaded in Feb 2013.)
+%   B. Hargreaves   Nov 2003. (Downloaded in Feb 2013.
+%                   http://www-mrsrl.stanford.edu/~brian/blochsim/)
 %   M. Robson       REVERSED SIGN OF GYROMAGNETIC RATIO.
 %   C. Rodgers      Feb 2013. Add flag to control verbosity.
 %                   Don't crash Matlab if called with insufficient

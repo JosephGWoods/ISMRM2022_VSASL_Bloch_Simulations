@@ -23,18 +23,20 @@
 
 function [B1, GTag, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS)
 
+% Check inputs
 if nargin < 8; error('A minimum of 8 inputs are required!'); end
 if ~exist('bplotVS','var') || isempty(bplotVS); bplotVS = false; end
 
 bcomposite = true;
 
+% Gyromagnetic ratio
 switch units
     case 'G';  gam = gyroratio('Hz/G');
     case 'T';  gam = gyroratio('Hz/T');
     case 'Hz'; gam = 1;
 end
 
-% Settings for the VS gradient design optimisation
+% Settings for the VSASL module design
 T = struct('Vcut',Vcut,'B1max',B1max,'Gmax',Gmax,'SRmax',SRmax,'vspad1',vspad1,'vspad2',vspad2, ...
     'RFUP',RFUP,'GUP',GUP,'units',units,'gam',gam,'gamrad',2*pi*gam);
 
@@ -42,6 +44,7 @@ func = struct('vsType',vsType,'gradAmp','scale');
 func.RUP_GRD_ms = @(A) round(ceil(round(round(A,12)*1e3/GUP,9))*GUP*1e-3, 3);
 func.Vcut2m1    = @(x) pi/(T.gamrad*2*x);
 
+% Get/set module specicific timings (some are specified in the "gen*.m" files)
 switch vsType
     case 'DRHS'
         [~,~,~,T] = genDRHS(T, 'exciterefocus'); % get rf timings
@@ -57,13 +60,14 @@ switch vsType
         T.RFe_2 = 0;   % no iso-delay needed
         T.RFr   = 3;   % adiabatic full passage duration (ms)
     case 'FTVSI'
-        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bcomposite); % get RF timings
         T.Nk      = 9;                                        % number of excitations
+        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bcomposite); % get RF timings
 end
 
-T = VSTimingsEqual(func, T); % generate equal duration gradient timings
+% Calculate VSASL gradient flat top duration to achieve specified Vcut
+T = VSTimingsEqual(func, T);
 
-% Generate the VS module and convert to Hz
+% Generate the numerical VS module
 switch vsType
     case 'DRHS' ; [B1, GTag, GCont, T] = genDRHS( T);
     case 'DRHT' ; [B1, GTag, GCont, T] = genDRHT( T);
@@ -71,7 +75,7 @@ switch vsType
     case 'BIR8' ; [B1, GTag, GCont, T] = genbir8( T);
     case 'FTVSI'; [B1, GTag, GCont, T] = genFTVSI(T, [], bcomposite);
 end
-T.t = (T.RFUP : T.RFUP : T.RFUP*length(B1)) * 1e-3;
+T.t = (T.RFUP : T.RFUP : T.RFUP*length(B1)) * 1e-3; % module time array for plotting
 
 % Plot VS module
 if bplotVS
@@ -91,7 +95,7 @@ if bplotVS
         Gunits    = [units '/cm'];
     end
 
-    figure('Units','normalized','Position',[0.1,0.4,0.8,0.4]);
+    figure('Units','normalized','Position',[0,0.2,1,0.6]);
     for ii = 1:2
         subplot(2,1,ii);
         set(gca,'FontSize',12);

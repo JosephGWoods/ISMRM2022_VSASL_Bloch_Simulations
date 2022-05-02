@@ -1,4 +1,4 @@
-% SECH pulse morphed into a cosine envelope ala VERSE, but with no gradients
+% Non-selective hyperbolic-secant pulse morphed into a cosine envelope ala VERSE
 %
 % [rho, theta, res] = gensechNS(beta, mu, dtus, cexp)
 %
@@ -14,6 +14,7 @@
 %      theta - RF phase (in rad)
 %      res   - RF resolution
 %
+% From Eric C. Wong's sequence code
 % Converted from CFMRIs spep code by Joseph G. Woods, CFMRI, UCSD, May 2020
 
 function [rho, theta, res] = gensechNS(beta, mu, dtus, cexp, initph)
@@ -35,8 +36,8 @@ cint_scale = 0.5*pi*dp/ac;
 % start cos^cexp integral by integrating half way into the first time bin
 cint = 0.5*cint_scale;
 
-rho   = zeros(res, 1); %zeros(SECHRESMAX, 1);
-theta = zeros(res, 1); %zeros(SECHRESMAX, 1);
+rho   = zeros(res, 1);
+theta = zeros(res, 1);
 for ii = 0 : 1 : n-1
     
     % envelope is cos^cexp
@@ -47,7 +48,7 @@ for ii = 0 : 1 : n-1
     % inverse of integral of sech is 2*atanh(tan(x/2))
     bt            =  2 * atanh( tan(0.5*cint) );
     sech          =  2 / (exp(bt) + exp(-1*bt));
-    phase         = -1 * mu * log(sech) + initph;
+    phase         = mu * log(sech) + initph;
     theta(n+ii+1) = modp(phase);
     theta(n-ii)   = theta(n+ii+1);
     

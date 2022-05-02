@@ -21,23 +21,21 @@
 % T parameter descriptions:
 %      GUP   - gradient update time (µs)
 %      RFUP  - RF update time (µs)
-%      Gmax  - Max gradient amplitude (units/cm)
-%      B1max - Max RF amplitude (units)
-%      units - RF and gradient units ('G', 'T', 'Hz')
-%      f1    - flat top time for G1
-%      f2    - flat top time for G2
-%      f3    - flat top time for G3
-%      f4    - flat top time for G4
-%      nGrad - number of VS gradients
-%      r     - rise time (keep constant)
+%      Gmax  - max gradient amplitude (units/cm)
+%      SRmax - max gradient slew rate (units/cm/s
+%      B1max - max B1+ amplitude (units)
+%      units - B1+ and gradient units ('G', 'T', 'Hz')
+%      f     - gradient flat top time
+%      r     - gradient rise time
 %      ta[n] - start of trapezoid attack time for nth gradient
 %      td[n] - end of trapezoid decay time for nth gradient
-%      RFe       - duration of adiabatic half passage for BIR-8
-%      RFr       - duration of adiabatic full passage for BIR-8
-%      RFr1      - start time of 1st AFP
-%      RFr2      - start time of 2nd AFP
-%      RFr3      - start time of 3rd AFP
-%      RFe2      - start of 2nd AHP
+%      RFe   - duration of adiabatic half passage
+%      RFe_2 - isodelay of excitation pulse
+%      RFr   - duration of adiabatic full passage
+%      RFr1  - start time of 1st AFP
+%      RFr2  - start time of 2nd AFP
+%      RFr3  - start time of 3rd AFP
+%      RFe2  - start of 2nd AHP
 %      All timings in ms
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
@@ -52,10 +50,10 @@ B1    = [];
 gTag  = [];
 gCont = [];
 
-% Set the BIR8 parameters
+% Set the BIR parameters (Guo and Wong, MRM 2012. http://doi.wiley.com/10.1002/mrm.24145)
 wmax = 42520.0; % max frequency sweep (hz)
 zeta = 43.58;   % (s^-1)
-tkap = 69.65;   % tan of kappa
+tkap = 69.65;   % tan of kapp
 
 % Set the gradient polarities
 if ~isfield(T,'polTag')
@@ -85,15 +83,15 @@ end
 if contains(bSection,'refocus') || strcmp(bSection,'BIR8')
     
     if ~exist('rho','var')
-        [rho, theta] = genbir(wmax, zeta, tkap, T.RFr, T.RFUP);
+        [rho, theta] = genbir(wmax, zeta, tkap, T.RFe, T.RFUP);
     end
     
     T.B1_refocus = T.B1max * rho.birmid .* exp(1i * theta.birmid); % abs(B1) and angle(B1)
     
-    % Generate the 90° phase increments (Liu et al. MRM 2021)
-    T.B1_refocus2 = T.B1_refocus * exp(1i * deg2rad( 90));
-    T.B1_refocus3 = T.B1_refocus * exp(1i * deg2rad(180)); 
-    T.B1_refocus4 = T.B1_refocus * exp(1i * deg2rad(270));
+    % Generate the 90° phase increments (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
+    T.B1_refocus2 = T.B1_refocus * exp(1i *  90*pi/180);
+    T.B1_refocus3 = T.B1_refocus * exp(1i * 180*pi/180);
+    T.B1_refocus4 = T.B1_refocus * exp(1i * 270*pi/180);
 
 end
 

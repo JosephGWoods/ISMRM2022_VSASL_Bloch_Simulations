@@ -1,4 +1,4 @@
-%% Function to generate an FT-VSI velocity selective module
+%% Function to generate an Fourier-transform velocity selective inversion velocity selective module
 %
 % [B1, gTag, gCont, T] = genFTVSI(T, bSection)
 %
@@ -24,14 +24,11 @@
 %      GUP    - gradient update time (µs)
 %      RFUP   - RF update time (µs)
 %      Gmax   - max gradient amplitude (units/cm)
-%      B1max  - max RF amplitude (units)
-%      units  - RF and gradient units ('G', 'T', 'Hz')
-%      f1     - flat top time for G1
-%      f2     - flat top time for G2
-%      f3     - flat top time for G3
-%      f4     - flat top time for G4
-%      nGrad  - number of VS gradients
-%      r      - rise time (keep constant)
+%      SRmax  - max gradient slew rate (units/cm/s
+%      B1max  - max B1+ amplitude (units)
+%      units  - B1+ and gradient units ('G', 'T', 'Hz')
+%      f      - gradient flat top time
+%      r      - gradient rise time
 %      ta[n]  - start of trapezoid attack time for nth gradient
 %      td[n]  - end of trapezoid decay time for nth gradient
 %      RF     - duration of excitation pulse
@@ -80,11 +77,12 @@ end
 
 if contains(section,'excite') || strcmp(section,'FTVSI')
 
-    FA    = 20;  % Flip angle (degrees)
-    phaseE = 0;   % Phase of excitation pulse (+x)
+    FA     = 180/T.Nk; % excitation flip angle (degrees)
+    phaseE = 0;        % phase of excitation pulse (+x)
     
     % Generate the hard pulse
-    T.RFe = 1e-3 * ceil(1e6*deg2rad(FA)/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % ms
+    T.RFe   = 1e-3 * ceil(1e6*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % (ms)
+    T.RFe_2 = T.RFe/2;                                                    % approximate isodelay (for off-resonance robustness)
     T.B1_excite = genhard(FA, phaseE, T.RFe, T.B1max, T.RFUP, T.units);
 
     % No gradients on
@@ -101,27 +99,27 @@ if contains(section,'refocus') || strcmp(section,'FTVSI')
     
     if ~bcomposite
         % Generate the hard pulse
-        T.RFr = 1e-3 * ceil(1e6*deg2rad(FA)/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % ms
+        T.RFr = 1e-3 * ceil(1e6*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % (ms)
         B1_refocus = genhard(FA, 0, T.RFr, T.B1max, T.RFUP, T.units);
     else
-        % Generate the composite pulse
-        dur1  = 1e-3 * ceil(1e6*deg2rad(FA/2)/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % ms
-        dur2  = 1e-3 * ceil(1e6*deg2rad(FA  )/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % ms
-        T.RFr = dur1 + dur2 + dur1;
-        B1_1  = genhard(FA/2,  0, dur1, T.B1max, T.RFUP, T.units);
-        B1_2  = genhard(FA  , 90, dur2, T.B1max, T.RFUP, T.units);
+        % Generate the composite pulse (see Liu et al. MRM 2021. doi:https://doi.org/10.1002/mrm.28310)
+        dur1  = 1e-3 * ceil(1e6*(FA/2)*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; %  90° (ms)
+        dur2  = 1e-3 * ceil(1e6* FA   *pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % 180° (ms)
+        T.RFr = dur1 + dur2 + dur1;                                % total duration
+        B1_1  = genhard(FA/2,  0, dur1, T.B1max, T.RFUP, T.units); %  90° has 0° phase
+        B1_2  = genhard(FA  , 90, dur2, T.B1max, T.RFUP, T.units); % 180° has 90° phase
         B1_refocus = [B1_1; B1_2; B1_1];
     end
     
-    % Add phase for +y and -y pulses
+    % Add phase for +y and -y pulses (for MLEV-16)
     T.B1_refocus      = zeros(length(B1_refocus),2);
-    T.B1_refocus(:,1) = B1_refocus .* exp(1i * deg2rad(phaseR(1))); % +y
-    T.B1_refocus(:,2) = B1_refocus .* exp(1i * deg2rad(phaseR(2))); % -y
+    T.B1_refocus(:,1) = B1_refocus .* exp(1i * phaseR(1)*pi/180); % +y
+    T.B1_refocus(:,2) = B1_refocus .* exp(1i * phaseR(2)*pi/180); % -y
     
-    % Generate the 90° phase increments (Liu et al. MRM 2021)
-    T.B1_refocus2 = T.B1_refocus * exp(1i * deg2rad( 90));
-    T.B1_refocus3 = T.B1_refocus * exp(1i * deg2rad(180));
-    T.B1_refocus4 = T.B1_refocus * exp(1i * deg2rad(270));
+    % Generate the 90° phase increments (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
+    T.B1_refocus2 = T.B1_refocus * exp(1i *  90*pi/180);
+    T.B1_refocus3 = T.B1_refocus * exp(1i * 180*pi/180);
+    T.B1_refocus4 = T.B1_refocus * exp(1i * 270*pi/180);
     
     % No gradients on
     T.grad_refocus = zeros(length(T.B1_refocus),1);

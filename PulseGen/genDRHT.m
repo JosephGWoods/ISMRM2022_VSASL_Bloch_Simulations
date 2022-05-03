@@ -98,7 +98,7 @@ if contains(bSection,'refocus') || strcmp(bSection,'DRHT')
     tkap = 69.65;     % tan of kapp
     phase = [-90,90]; % Initial phase of refocussing pulses (180° phase between them)
     
-    [rho, theta, ~] = genbir(wmax, zeta, tkap, RUP_GRD_ms(T.RFr/2), T.RFUP);
+    [rho, theta, ~] = genBIR(wmax, zeta, tkap, RUP_GRD_ms(T.RFr/2), T.RFUP);
 
     T.B1_refocus(:,1) = T.B1max * rho.birmid .* exp(1i * theta.birmid) * exp(1i * phase(1)*pi/180); % abs(B1) and angle(B1)
     T.B1_refocus(:,2) = T.B1max * rho.birmid .* exp(1i * theta.birmid) * exp(1i * phase(2)*pi/180); % abs(B1) and angle(B1)

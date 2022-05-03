@@ -67,7 +67,7 @@ end
 
 if contains(bSection,'excite') || strcmp(bSection,'BIR8')
 
-    [rho, theta, ~] = genbir(wmax, zeta, tkap, T.RFe, T.RFUP);
+    [rho, theta, ~] = genBIR(wmax, zeta, tkap, T.RFe, T.RFUP);
     
     T.B1_excite1 = T.B1max * rho.birleft  .* exp(1i * theta.birleft );
     T.B1_excite2 = T.B1max * rho.birright .* exp(1i * theta.birright);
@@ -83,7 +83,7 @@ end
 if contains(bSection,'refocus') || strcmp(bSection,'BIR8')
     
     if ~exist('rho','var')
-        [rho, theta] = genbir(wmax, zeta, tkap, T.RFe, T.RFUP);
+        [rho, theta] = genBIR(wmax, zeta, tkap, T.RFe, T.RFUP);
     end
     
     T.B1_refocus = T.B1max * rho.birmid .* exp(1i * theta.birmid); % abs(B1) and angle(B1)

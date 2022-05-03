@@ -130,6 +130,7 @@ end
     
 if contains(bSection,'combine') || strcmp(bSection,'DRHS')
 
+    % Gaps for VS gradients
     gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);
     gap2 = zeros(round((T.RFr2-T.RFr1-T.RFr)*1e3/T.RFUP), 1);
     gap3 = zeros(round((T.RFe2-T.RFr2-T.RFr)*1e3/T.RFUP), 1);

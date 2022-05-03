@@ -127,7 +127,7 @@ end
         p.addParameter('axisfontsize' , 12         , @isscalar);
         p.addParameter('labelfontsize', 16         , @isscalar);
         p.addParameter('titlefontsize', 16         , @isscalar);
-        p.addParameter('view'         , 3          , @isnumeric);
+        p.addParameter('view'         , 2          , @isnumeric);
         p.addParameter('order'        , 'columns'  , @ischar   );
         p.addParameter('linestyle'    , 'none'     , @ischar);
         p.parse(inputs{:});

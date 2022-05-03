@@ -6,14 +6,14 @@ This is the code used for the Velocity Selective ASL Bloch simulation tutorial a
 
 Bloch simulations are performed using an adapted version of Brian Hargreaves' MEX Bloch simulation code. The original version may be found at http://www-mrsrl.stanford.edu/~brian/blochsim/.
 
-This tutorial was designed and written by [Joseph G. Woods](https://orcid.org/0000-0002-0329-824X) (University of Oxford), [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University), [Qin Qin](https://orcid.org/0000-0002-6432-2944) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
+This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford), [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University), [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
 
 ## Code Contributors
 
-Joseph G. Woods (University of Oxford)  
-Dapeng Liu (Johns Hopkins University)   
-Eric C. Wong (University of California San Diego)   
-Jia Guo (University of California Riverside)    
+[Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford)    
+[Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University)    
+[Eric C. Wong](https://profiles.ucsd.edu/eric.wong) (University of California San Diego)    
+[Jia Guo](https://profiles.ucr.edu/app/home/profile/jiag) (University of California Riverside)    
 
 ## References
 

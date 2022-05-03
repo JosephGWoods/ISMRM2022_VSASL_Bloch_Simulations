@@ -20,8 +20,8 @@
 %
 % This function numerically calculates the additional gradient field
 % induced by switching of the gradient amplitude. This is modelled as a sum
-% of exponentials. See Vaals and Bergman (1990) and James Meakin's Thesis
-% (2013).
+% of exponentials. See Vaals and Bergman, JMR 1990
+% (https://doi.org/10.1016/0022-2364(90)90365-G)
 %
 % Equation:
 %           gec(t,n) = -dG/dt * H(t) A exp( -t / τ )

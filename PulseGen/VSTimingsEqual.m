@@ -21,33 +21,50 @@
 %      r      - gradient rise time
 %      ta[n]  - start of trapezoid attack time for nth gradient
 %      td[n]  - end of trapezoid decay time for nth gradient
-%      RF     - duration of excitation pulse
-%      RF2    - start time of last excitation pulse
+%      RFe    - duration of excitation pulse
+%      RFe_2  - isodelay of excitation pulse
+%      RFe2   - start time of last excitation pulse
 %      RFr    - duration of refocussing pulse
 %      RFr1   - start time of 1st refocussing pulse
 %      RFr2   - start time of 2nd refocussing pulse
-%      RFr3   - start time of 3rd refocussing pulse
-%      RFrpad - time between the HS/HT pulses (DRHS/DRHT)
+%      RFr3   - start time of 3rd refocussing pulse (BIR-8)
+%      RFrpad - time between the HS/HT pulses (DRHS/DRHT/FTVSI)
 %      All timings in ms
 %
-% Written by Joseph G. Woods, CFMRI, UCSD, June 2020
+% Example timing layout for DRHS, DRHT, and FT-VSI:
+%
+%              f                                                  f
+%             ___                                                ___
+%            /   \                                              /   \
+%          r/     \r                                          r/     \r
+% RFe______/       \______RFr______         ______RFrpad______/       \______RFr______         ______RFe
+%    vspad1         vspad2   vspad1\       /vspad2      vspad1         vspad2   vspad1\       /
+%                                  r\     /r                                          r\     /r
+%                                    \___/                                              \___/
+%                                      f                                                  f
+%
+% Written by Jia Guo and Joseph G. Woods, CFMRI, UCSD
 
 function T = VSTimingsEqual(func, T)
  
 m1Target   = 1e12 * pi/(T.gamrad*2*T.Vcut); % 1st gradient moment to achieve Vcut
-RUP_GRD_ms = func.RUP_GRD_ms;
+RUP_GRD_ms = func.RUP_GRD_ms;               % extract often used timing rounding function
 
-dt  = T.GUP;                            % gradient update time
+dt  = T.GUP;                               % gradient update time
 T.r = RUP_GRD_ms(abs(T.Gmax/T.SRmax*1e3)); % gradient rise/ramp time
-R   = T.r*1e3/dt;                       % convert to rise time to number of gradient raster points
+R   = T.r*1e3/dt;                          % convert to rise time to number of gradient raster points
 radicand = 0;
 
-% This section essentially tries to solve the 0th and 1st moment gradienr
+% This section essentially tries to solve the 0th and 1st moment gradient
 % equations for the gradient flat top time which is the only unknown. Gmax
 % is then adjusted so that Vcut is exactly achieved.
+%
+% i.e. solve the following equations for f (flat top time):
+% m0 = 0
+% m1 = π / (2*π*γ*2*Vcut)
 
 % TODO: add comments and equations to clearly explain how the flat top time
-%       is being calculated.
+%       is calculated in each case.
 
 if strcmpi(func.vsType,'DRHS') || strcmpi(func.vsType,'DRHT')
     p        = (4*(T.vspad1+T.vspad2)+2*T.RFr+4*T.RFe_2+8*T.r)*1e3/dt; % In µs
@@ -99,7 +116,7 @@ end
 % If we get to here, flatTop is set to optF
 T.f = RUP_GRD_ms( optF*dt*1e-3 ); % In ms
 
-% Now calculate the remaining timings
+% Now calculate the remaining module timings
 if     strcmpi(func.vsType,'DRHS');  T = gradtimingsDRHS(T);
 elseif strcmpi(func.vsType,'DRHT');  T = gradtimingsDRHS(T);
 elseif strcmpi(func.vsType,'BIR8');  T = gradtimingsBIR8(T);

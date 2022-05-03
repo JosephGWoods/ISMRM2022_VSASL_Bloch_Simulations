@@ -21,7 +21,7 @@
 %
 % Written by Joseph G. Woods, University of Oxford, April 2022
 
-function [B1, GTag, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite)
+function [B1, GTag, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite, bsinc)
 
 % Gyromagnetic ratio
 switch units
@@ -34,7 +34,7 @@ end
 T = struct('Vcut',Vcut,'B1max',B1max,'Gmax',Gmax,'SRmax',SRmax,'vspad1',vspad1,'vspad2',vspad2, ...
     'RFUP',RFUP,'GUP',GUP,'units',units,'gam',gam,'gamrad',2*pi*gam);
 
-func = struct('vsType',vsType,'gradAmp','scale');
+func = struct('vsType',vsType,'gradAmp','scale','bsinc',bsinc);
 func.RUP_GRD_ms = @(A) round(ceil(round(round(A,12)*1e3/GUP,9))*GUP*1e-3, 3);
 func.Vcut2m1    = @(x) pi/(T.gamrad*2*x);
 
@@ -55,7 +55,7 @@ switch vsType
         T.RFr   = 3;   % adiabatic full passage duration (ms)
     case 'FTVSI'
         T.Nk      = 9; % number of excitations
-        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bvelCompCont, bcomposite); % get RF timings
+        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bvelCompCont, bcomposite, bsinc); % get RF timings
 end
 
 % Calculate VSASL gradient flat top duration to achieve specified Vcut
@@ -67,7 +67,7 @@ switch vsType
     case 'DRHT' ; [B1, GTag, GCont, T] = genDRHT( T, 'all', bvelCompCont);
     case 'BIR4' ; [B1, GTag, GCont, T] = genBIR4( T, 'all', bvelCompCont);
     case 'BIR8' ; [B1, GTag, GCont, T] = genBIR8( T, 'all', bvelCompCont);
-    case 'FTVSI'; [B1, GTag, GCont, T] = genFTVSI(T, 'all', bvelCompCont, bcomposite);
+    case 'FTVSI'; [B1, GTag, GCont, T] = genFTVSI(T, 'all', bvelCompCont, bcomposite, bsinc);
 end
 T.t = (T.RFUP : T.RFUP : T.RFUP*length(B1)) * 1e-3; % module time array for plotting
 

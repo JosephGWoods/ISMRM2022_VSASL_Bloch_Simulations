@@ -42,7 +42,7 @@
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
 
-function [B1, gTag, gCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite)
+function [B1, gTag, gCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite, bsinc)
 
 if ~exist('T'         ,'var') || isempty(T);          error('T must be specified!'); end
 if ~exist('section'   ,'var') || isempty(section);    section    = 'all'; end
@@ -71,13 +71,23 @@ else;            T.polCont = [ 0, 0, 0, 0]; end
 
 if contains(section,'excite') || strcmp(section,'all')
 
-    FA     = 180/T.Nk; % excitation flip angle (degrees)
-    phaseE = 0;        % phase of excitation pulse (+x)
+    FA     = 180; % total excitation flip angle (degrees)
+    phaseE = 0;   % phase of excitation pulse (+x)
+
+    if bsinc % Sinc modulation (Guo et al. MRM 2021 https://doi.org/10.1002/mrm.28572)
+        FTmod = gensinc(FA, 0, T.Nk, 1, 1, 0, 1e3, T.units);                          % generate 9-point single-lobe non-windowed sinc
+        FTmod = T.Nk * FTmod / sum(FTmod);                                            % normalise sinc modulation by T.Nk
+        FA    = FA/T.Nk;                                                              % mean excitation flip angle (degrees)
+        T.RFe = 1e-3 * ceil(1e6*max(FTmod)*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % excitation duration (ms)
+    else
+        FA    = FA/T.Nk;                                                   % excitation flip angle (degrees)
+        T.RFe = 1e-3 * ceil(1e6*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % excitation duration (ms)
+        FTmod = ones(T.Nk,1);                                              % rectangular modulation (i.e. no modulation)
+    end
     
     % Generate the hard pulse
-    T.RFe   = 1e-3 * ceil(1e6*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % (ms)
-    T.RFe_2 = T.RFe/2;                                                    % approximate isodelay (for off-resonance robustness)
-    T.B1_excite = genhard(FA, phaseE, T.RFe, T.B1max, T.RFUP, T.units);
+    T.RFe_2     = T.RFe/2;                                              % approximate isodelay (for off-resonance robustness)
+    T.B1_excite = genhard(FA, phaseE, T.RFe, T.B1max, T.RFUP, T.units); % 
 
     % No gradients on
     T.grad_excite = zeros(size(T.B1_excite));
@@ -147,18 +157,18 @@ if contains(section,'combine') || strcmp(section,'all')
     B1 = []; B1_2 = []; B1_3 = []; B1_4 = [];
     for ii = 1 : 2 : length(pc)        
         %      [           excite;  G1 ;      refocus           ;G2+G3;      refocus              ;  G4 ];
-        B1   = [B1;   T.B1_excite; gap1; T.B1_refocus(:,pc(ii)) ; gap2; T.B1_refocus(:,pc(ii+1))  ; gap3]; % 1st phase
-        B1_2 = [B1_2; T.B1_excite; gap1; T.B1_refocus2(:,pc(ii)); gap2; T.B1_refocus2(:,pc(ii+1)) ; gap3]; % 2nd phase
-        B1_3 = [B1_3; T.B1_excite; gap1; T.B1_refocus3(:,pc(ii)); gap2; T.B1_refocus3(:,pc(ii+1)) ; gap3]; % 3rd phase
-        B1_4 = [B1_4; T.B1_excite; gap1; T.B1_refocus4(:,pc(ii)); gap2; T.B1_refocus4(:,pc(ii+1)) ; gap3]; % 4th phase
+        B1   = [B1;   T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus(:,pc(ii)) ; gap2; T.B1_refocus(:,pc(ii+1))  ; gap3]; % 1st phase
+        B1_2 = [B1_2; T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus2(:,pc(ii)); gap2; T.B1_refocus2(:,pc(ii+1)) ; gap3]; % 2nd phase
+        B1_3 = [B1_3; T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus3(:,pc(ii)); gap2; T.B1_refocus3(:,pc(ii+1)) ; gap3]; % 3rd phase
+        B1_4 = [B1_4; T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus4(:,pc(ii)); gap2; T.B1_refocus4(:,pc(ii+1)) ; gap3]; % 4th phase
     end
-    B1     = [B1  ; T.B1_excite]; % Last excitation pulse
+    B1 = [B1; T.B1_excite*FTmod(end)]; % Last excitation pulse
 
     % Dynamic phase cycling (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
     T.B1(:,1) = B1;
-    T.B1(:,2) = [B1_2; T.B1_excite];
-    T.B1(:,3) = [B1_3; T.B1_excite];
-    T.B1(:,4) = [B1_4; T.B1_excite];
+    T.B1(:,2) = [B1_2; T.B1_excite*FTmod(end)];
+    T.B1(:,3) = [B1_3; T.B1_excite*FTmod(end)];
+    T.B1(:,4) = [B1_4; T.B1_excite*FTmod(end)];
     
     gTag = [T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...
             T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...

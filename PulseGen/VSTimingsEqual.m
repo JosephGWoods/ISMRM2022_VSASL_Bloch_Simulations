@@ -95,7 +95,9 @@ elseif strcmpi(func.vsType,'BIR4')
     T.Gmax = m1Target/(dt*dt*(R + optF)*(p + 2*R + optF));
     
 elseif strcmpi(func.vsType,'FTVSI')
-    kluge = 1.240315; % Multiplying Vcut by 1.2403 is a hack to match the "1-crossing" to other methods
+    % Multiplying Vcut by this factor is a hack to match the "1-crossing" to other methods
+    if func.bsinc; kluge = 0.86363;
+    else;          kluge = 1.240315; end
     A    = pi/(2*T.Vcut*kluge*T.gamrad*T.Nk*T.Gmax);
     B    = (T.vspad1+T.vspad2+T.RFr/2+T.RFe_2)*1e-3;  % in s
     f    = (sqrt(2*A+(B+T.r*1e-3)^2)-B-3*T.r*1e-3)/2; % in s

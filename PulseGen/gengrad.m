@@ -70,25 +70,6 @@ for ii = 1:nshape
             rd = round( nr(ii)-1 : -1 : 0 ) / nr(ii);
             G  = Gmax(ii) * [ru, ft, rd];
             
-        case 's' % sine
-            ru = sin( round( 0 : 1 : floor(nf(ii)/2)  ) / floor(nf(ii)/2) * pi/2 );
-            rd = ru(end:-1:1);
-            G  = Gmax(ii) * [ru, rd];
-            if length(G) < nf(ii)
-                G = [G, zeros(1,nf(ii)-length(G))];
-            end
-            
-        case 'r' % rectangle
-            G = Gmax(ii) * ones(1, nf(ii));
-            
-        case 'c' % 1 - cosine
-            ru = 1 - cos( round( 0 : 1 : floor(nf(ii)/2) ) / floor(nf(ii)/2) * pi/2 );
-            rd = ru(end:-1:1);
-            G  = Gmax(ii) * [ru, rd];
-            if length(G) < nf(ii)
-                G = [G, zeros(1,nf(ii)-length(G))];
-            end
-            
     end
     
     Gout = [Gout, G, zeros(1, ngap(ii+1))];

@@ -31,8 +31,9 @@
 %      r      - gradient rise time
 %      ta[n]  - start of trapezoid attack time for nth gradient
 %      td[n]  - end of trapezoid decay time for nth gradient
-%      RF     - duration of excitation pulse
-%      RF2    - start time of last excitation pulse
+%      RFe    - duration of excitation pulse
+%      RFe_2  - isodelay of excitation pulse
+%      RFe2   - start time of last excitation pulse
 %      RFr    - duration of refocussing pulse
 %      RFr1   - start time of 1st refocussing pulse
 %      RFr2   - start time of 2nd refocussing pulse
@@ -158,9 +159,12 @@ if contains(section,'combine') || strcmp(section,'FTVSI')
         B1_4 = [B1_4; T.B1_excite; gap1; T.B1_refocus4(:,pc(ii)); gap2; T.B1_refocus4(:,pc(ii+1)) ; gap3]; % 4th phase
     end
     B1     = [B1  ; T.B1_excite]; % Last excitation pulse
-    T.B1_2 = [B1_2; T.B1_excite];
-    T.B1_3 = [B1_3; T.B1_excite];
-    T.B1_4 = [B1_4; T.B1_excite];
+
+    % Dynamic phase cycling (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
+    T.B1(:,1) = B1;
+    T.B1(:,2) = [B1_2; T.B1_excite];
+    T.B1(:,3) = [B1_3; T.B1_excite];
+    T.B1(:,4) = [B1_4; T.B1_excite];
     
     gTag = [T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...
             T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...

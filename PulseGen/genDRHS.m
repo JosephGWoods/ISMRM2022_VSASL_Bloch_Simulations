@@ -31,7 +31,7 @@
 %      td[n]  - end of trapezoid decay time for nth gradient
 %      RFe    - duration of excitation pulse
 %      RFe_2  - isodelay of excitation pulse
-%      RF2    - start time of last excitation pulse
+%      RFe2   - start time of last excitation pulse
 %      RFr    - duration of refocussing pulse
 %      RFr1   - start time of 1st refocussing pulse
 %      RFr2   - start time of 2nd refocussing pulse
@@ -134,11 +134,14 @@ if contains(bSection,'combine') || strcmp(bSection,'DRHS')
     gap2 = zeros(round((T.RFr2-T.RFr1-T.RFr)*1e3/T.RFUP), 1);
     gap3 = zeros(round((T.RFe2-T.RFr2-T.RFr)*1e3/T.RFUP), 1);
     
-    %        [     excite;   G1 ;      refocus ;G2+G3;      refocus ;  G4 ;      excite ];
+    %        [     excite;   G1 ;      refocus      ;G2+G3;      refocus      ;  G4 ;      excite ];
     B1     = [T.B1_excite1; gap1; T.B1_refocus(:,1) ; gap2; T.B1_refocus(:,2) ; gap3; T.B1_excite2];
-    T.B1_2 = [T.B1_excite1; gap1; T.B1_refocus2(:,1); gap2; T.B1_refocus2(:,2); gap3; T.B1_excite2]; % 2nd phase
-    T.B1_3 = [T.B1_excite1; gap1; T.B1_refocus3(:,1); gap2; T.B1_refocus3(:,2); gap3; T.B1_excite2]; % 3rd phase 
-    T.B1_4 = [T.B1_excite1; gap1; T.B1_refocus4(:,1); gap2; T.B1_refocus4(:,2); gap3; T.B1_excite2]; % 4th phase
+
+    % Dynamic phase cycling (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
+    T.B1(:,1) = B1;
+    T.B1(:,2) = [T.B1_excite1; gap1; T.B1_refocus2(:,1); gap2; T.B1_refocus2(:,2); gap3; T.B1_excite2]; % 2nd phase
+    T.B1(:,3) = [T.B1_excite1; gap1; T.B1_refocus3(:,1); gap2; T.B1_refocus3(:,2); gap3; T.B1_excite2]; % 3rd phase
+    T.B1(:,4) = [T.B1_excite1; gap1; T.B1_refocus4(:,1); gap2; T.B1_refocus4(:,2); gap3; T.B1_excite2]; % 4th phase
     
     gTag  = [T.grad_excite1; T.gTag_VS ; T.grad_excite2];
     gCont = [T.grad_excite1; T.gCont_VS; T.grad_excite2];

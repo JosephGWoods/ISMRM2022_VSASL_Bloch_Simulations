@@ -119,9 +119,12 @@ if contains(bSection,'combine') || strcmp(bSection,'BIR8')
 
     %        [     excite ;  G1 ;      refocus ;  G2 ;      refocus;  G3 ;      refocus ;  G4 ;      excite ];
     B1     = [T.B1_excite1; gap1; T.B1_refocus ; gap2; T.B1_refocus; gap3; T.B1_refocus ; gap4; T.B1_excite2]; % 1st phase
-    T.B1_2 = [T.B1_excite1; gap1; T.B1_refocus2; gap2; T.B1_refocus; gap3; T.B1_refocus2; gap4; T.B1_excite2]; % 2nd phase
-    T.B1_3 = [T.B1_excite1; gap1; T.B1_refocus3; gap2; T.B1_refocus; gap3; T.B1_refocus3; gap4; T.B1_excite2]; % 3rd phase 
-    T.B1_4 = [T.B1_excite1; gap1; T.B1_refocus4; gap2; T.B1_refocus; gap3; T.B1_refocus4; gap4; T.B1_excite2]; % 4th phase
+
+    % Dynamic phase cycling (Liu et al. MRM 2021. https://doi.org/10.1002/mrm.28622)
+    T.B1(:,1) = B1;
+    T.B1(:,2) = [T.B1_excite1; gap1; T.B1_refocus2; gap2; T.B1_refocus; gap3; T.B1_refocus2; gap4; T.B1_excite2]; % 2nd phase
+    T.B1(:,3) = [T.B1_excite1; gap1; T.B1_refocus3; gap2; T.B1_refocus; gap3; T.B1_refocus3; gap4; T.B1_excite2]; % 3rd phase
+    T.B1(:,4) = [T.B1_excite1; gap1; T.B1_refocus4; gap2; T.B1_refocus; gap3; T.B1_refocus4; gap4; T.B1_excite2]; % 4th phase
     
     %       [       excite ;   VS grad ;        excite ]
     gTag  = [T.grad_excite1; T.gTag_VS ; T.grad_excite2];

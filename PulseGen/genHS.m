@@ -1,6 +1,6 @@
 % Non-selective hyperbolic-secant pulse morphed into a cosine envelope ala VERSE
 %
-% [rho, theta, res] = gensechNS(beta, mu, dtus, cexp)
+% [rho, theta, res] = genHS(beta, mu, dtus, cexp)
 %
 % in:
 %      beta   - modulation angular frequency (rad/s)
@@ -17,7 +17,7 @@
 % Originally written by Eric C. Wong CFMRI, UCSD
 % Edited by Joseph G. Woods, CFMRI, UCSD, May 2020
 
-function [rho, theta, res] = gensechNS(beta, mu, dtus, cexp, initph)
+function [rho, theta, res] = genHS(beta, mu, dtus, cexp, initph)
 
 dt     = 1e-6 * dtus;         % convert to seconds
 initph = initph * pi / 180.0; % convert to radians

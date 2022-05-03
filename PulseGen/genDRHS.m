@@ -92,8 +92,8 @@ if contains(bSection,'refocus') || strcmp(bSection,'all')
     cexp  = 0.2;      % cosine exponent
     phase = [-90,90]; % Initial phase of refocussing pulses (180° phase between them)
     
-    [rho1, theta1, res] = gensechNS(beta, mu, T.RFUP, cexp, phase(1));
-    [rho2, theta2, ~  ] = gensechNS(beta, mu, T.RFUP, cexp, phase(2));
+    [rho1, theta1, res] = genHS(beta, mu, T.RFUP, cexp, phase(1));
+    [rho2, theta2, ~  ] = genHS(beta, mu, T.RFUP, cexp, phase(2));
     T.RFr = res * T.RFUP * 1e-3;
     
     T.B1_refocus(:,1) = T.B1max * rho1 .* exp(1i * theta1); % abs(B1) and angle(B1)

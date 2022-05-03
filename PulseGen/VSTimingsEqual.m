@@ -1,4 +1,4 @@
-%% Function to calculate gradient flat top times and generate velocity selective module timings
+%% Functions to calculate gradient flat top times and generate velocity selective module timings
 %
 % T = VSTimingsEqual(func, T)
 %
@@ -63,8 +63,7 @@ radicand = 0;
 % m0 = 0
 % m1 = π / (2*π*γ*2*Vcut)
 
-% TODO: add comments and equations to clearly explain how the flat top time
-%       is calculated in each case.
+% TODO: add comments and equations for clarity.
 
 if strcmpi(func.vsType,'DRHS') || strcmpi(func.vsType,'DRHT')
     p        = (4*(T.vspad1+T.vspad2)+2*T.RFr+4*T.RFe_2+8*T.r)*1e3/dt; % In µs
@@ -96,16 +95,17 @@ elseif strcmpi(func.vsType,'BIR4')
     T.Gmax = m1Target/(dt*dt*(R + optF)*(p + 2*R + optF));
     
 elseif strcmpi(func.vsType,'FTVSI')
-    A    = pi/(2*T.Vcut*T.gamrad*T.Nk*T.Gmax);
-    B    = (T.vspad1+T.vspad2+T.RFr/2+T.RFe_2)*1e-3; % in s
-    f    = (sqrt(2*A+(B+T.r*1e-3)^2)-B-3*T.r*1e-3)/2;  % in s
+    kluge = 1.240315; % Multiplying Vcut by 1.2403 is a hack to match the "1-crossing" to other methods
+    A    = pi/(2*T.Vcut*kluge*T.gamrad*T.Nk*T.Gmax);
+    B    = (T.vspad1+T.vspad2+T.RFr/2+T.RFe_2)*1e-3;  % in s
+    f    = (sqrt(2*A+(B+T.r*1e-3)^2)-B-3*T.r*1e-3)/2; % in s
     optF = ceil(f*1e6/dt); % Gradient raster points
     if strcmpi(func.gradAmp,'scale')
         optF = max(1,optF);
     end
     delta = T.r*1e-3 + optF*dt*1e-6;
     sep = 2*(2*T.r*1e-3 + optF*dt*1e-6 + B);
-    T.Gmax = pi/(2*T.Vcut*T.gamrad*T.Nk*delta*sep);
+    T.Gmax = pi/(2*T.Vcut*kluge*T.gamrad*T.Nk*delta*sep);
     
 end
 

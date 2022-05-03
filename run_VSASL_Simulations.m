@@ -6,7 +6,7 @@ addpath(genpath(filePath));
 
 %% General settings
 
-Vcut    = 2;             % velocity cutoff (cm/s) % CHANGE FTVSI M1 CALC SO THAT VCUT=2 CROSSES 1 AT 2 CM/S
+Vcut    = 2;             % velocity cutoff (cm/s)
 B1max   = 20 *1e-6;      % max B1+                (µT    -> T)
 Gmax    = 50 *1e-3*1e-2; % max gradient amplitude (mT/m  -> T/cm)
 SRmax   = 150*1e-2;      % max gradient slew rate (T/m/s -> T/cm/s)

@@ -1,6 +1,6 @@
 % BIR segments
 %
-% [rho, theta, nbir] = genbir(wmax, zeta, tkap, pw, dtus)
+% [rho, theta, nbir] = genBIR(wmax, zeta, tkap, pw, dtus)
 %
 % in:
 %      wmax - max frequency sweep in bir module (hz)
@@ -15,10 +15,10 @@
 %      theta - struct of RF phase segments (in rad)
 %      nbir  - RF resolution
 %
-% Originally written by Eric C. Wong CFMRI, UCSD
+% Written by Eric C. Wong CFMRI, UCSD
 % Edited by Joseph G. Woods, CFMRI, UCSD, June 2020
 
-function [rho, theta, n] = genbir(wmax, zeta, tkap, pw, dtus)
+function [rho, theta, n] = genBIR(wmax, zeta, tkap, pw, dtus)
 
 dt  = 1.e-6 * dtus;       % convert to seconds
 dur = 1.e-3 * pw;         % convert to seconds

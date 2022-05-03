@@ -8,6 +8,8 @@ Bloch simulations are performed using an adapted version of Brian Hargreaves' ME
 
 This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford), [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University), [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
 
+If you use this tutorial for your own teaching, or use some part of the code for any reason, the authors would appreciate that appropriate credit is given.
+
 ## Code Contributors
 
 [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford)    

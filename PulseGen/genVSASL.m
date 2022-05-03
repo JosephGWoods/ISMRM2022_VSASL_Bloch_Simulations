@@ -21,13 +21,7 @@
 %
 % Written by Joseph G. Woods, University of Oxford, April 2022
 
-function [B1, GTag, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS)
-
-% Check inputs
-if nargin < 8; error('A minimum of 8 inputs are required!'); end
-if ~exist('bplotVS','var') || isempty(bplotVS); bplotVS = false; end
-
-bcomposite = true;
+function [B1, GTag, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite)
 
 % Gyromagnetic ratio
 switch units
@@ -47,9 +41,9 @@ func.Vcut2m1    = @(x) pi/(T.gamrad*2*x);
 % Get/set module specicific timings (some are specified in the "gen*.m" files)
 switch vsType
     case 'DRHS'
-        [~,~,~,T] = genDRHS(T, 'exciterefocus'); % get rf timings
+        [~,~,~,T] = genDRHS(T, 'exciterefocus', bvelCompCont); % get rf timings
     case 'DRHT'
-        [~,~,~,T] = genDRHT(T, 'excite'); % get rf timings
+        [~,~,~,T] = genDRHT(T, 'excite', bvelCompCont); % get rf timings
         T.RFr     = 3; % adiabatic full passage duration (ms)
     case 'BIR4'
         T.RFe   = 1.5; % adiabatic half passage duration (ms)
@@ -60,8 +54,8 @@ switch vsType
         T.RFe_2 = 0;   % no iso-delay needed
         T.RFr   = 3;   % adiabatic full passage duration (ms)
     case 'FTVSI'
-        T.Nk      = 9;                                        % number of excitations
-        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bcomposite); % get RF timings
+        T.Nk      = 9; % number of excitations
+        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bvelCompCont, bcomposite); % get RF timings
 end
 
 % Calculate VSASL gradient flat top duration to achieve specified Vcut
@@ -69,11 +63,11 @@ T = VSTimingsEqual(func, T);
 
 % Generate the numerical VS module
 switch vsType
-    case 'DRHS' ; [B1, GTag, GCont, T] = genDRHS( T);
-    case 'DRHT' ; [B1, GTag, GCont, T] = genDRHT( T);
-    case 'BIR4' ; [B1, GTag, GCont, T] = genbir4( T);
-    case 'BIR8' ; [B1, GTag, GCont, T] = genbir8( T);
-    case 'FTVSI'; [B1, GTag, GCont, T] = genFTVSI(T, [], bcomposite);
+    case 'DRHS' ; [B1, GTag, GCont, T] = genDRHS( T, 'all', bvelCompCont);
+    case 'DRHT' ; [B1, GTag, GCont, T] = genDRHT( T, 'all', bvelCompCont);
+    case 'BIR4' ; [B1, GTag, GCont, T] = genBIR4( T, 'all', bvelCompCont);
+    case 'BIR8' ; [B1, GTag, GCont, T] = genBIR8( T, 'all', bvelCompCont);
+    case 'FTVSI'; [B1, GTag, GCont, T] = genFTVSI(T, 'all', bvelCompCont, bcomposite);
 end
 T.t = (T.RFUP : T.RFUP : T.RFUP*length(B1)) * 1e-3; % module time array for plotting
 

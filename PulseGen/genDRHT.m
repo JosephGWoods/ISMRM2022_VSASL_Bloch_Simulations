@@ -40,10 +40,10 @@
 %
 % Written by Joseph G. Woods, University of Oxford, April 2022
 
-function [B1, gTag, gCont, T] = genDRHT(T, bSection)
+function [B1, gTag, gCont, T] = genDRHT(T, bSection, bvelCompCont)
 
 if ~exist('T'       ,'var') || isempty(T);        error('T must be specified!'); end
-if ~exist('bSection','var') || isempty(bSection); bSection = 'DRHT'; end
+if ~exist('bSection','var') || isempty(bSection); bSection = 'all'; end
 
 % Initialise outputs in case they are not set
 B1    = [];
@@ -53,20 +53,13 @@ gCont = [];
 RUP_GRD_ms = @(A) round(ceil(round(round(A,12)*1e3/T.GUP,9))*T.GUP*1e-3, 3);
 
 % Set the gradient polarities
-if ~isfield(T,'polTag')
-    T.polTag     = [ 1,-1, 1,-1];
-    T.polEffTag  = [ 1, 1,-1,-1];
-    T.polCont    = [ 0, 0, 0, 0];
-    T.polEffCont = [ 0, 0, 0, 0];
-    %T.PolCont    = [ 1, 1, 1, 1];
-    %T.PolEffCont = [ 1,-1,-1, 1];
-    %T.PolCont    = [-1,-1,-1,-1];
-    %T.PolEffCont = [-1, 1, 1,-1];
-end
+T.polTag = [ 1,-1, 1,-1];
+if bvelCompCont; T.polCont = [ 1, 1, 1, 1];
+else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulses
 
-if contains(bSection,'excite') || strcmp(bSection,'DRHT')
+if contains(bSection,'excite') || strcmpi(bSection,'all')
 
     FA     = 90;  % Flip angle (degrees)
     phase1 = 0;   % Phase of flip down
@@ -90,7 +83,7 @@ end
 %% Generate the HT refocussing pulses
 % Uses hyperbolic-tanget pulses (see Qin and van Zijl. MRM 2016 https://doi.org/10.1002/mrm.26010)
 
-if contains(bSection,'refocus') || strcmp(bSection,'DRHT')
+if contains(bSection,'refocus') || strcmpi(bSection,'all')
 
     % Set the BIR parameters (Guo and Wong, MRM 2012. http://doi.wiley.com/10.1002/mrm.24145)
     wmax = 42520.0;   % max frequency sweep (hz)
@@ -112,7 +105,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(bSection,'VSgrad') || strcmp(bSection,'DRHT')
+if contains(bSection,'VSgrad') || strcmpi(bSection,'all')
     
     gTag_VS  = genVSGrad(T, T.polTag );
     gCont_VS = genVSGrad(T, T.polCont);
@@ -125,7 +118,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(bSection,'combine') || strcmp(bSection,'DRHT')
+if contains(bSection,'combine') || strcmpi(bSection,'all')
 
     % Gaps for VS gradients
     gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);

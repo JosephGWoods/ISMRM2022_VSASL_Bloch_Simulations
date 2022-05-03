@@ -19,7 +19,7 @@ bplotVS = true;          % plot modules
 T1      = inf;           % longitudinal relaxation time (s)
 T2      = inf;           % transverse relaxation time (s)
 
-%% Double-Refocussed Hyperbolic-Secant (DRHS) module
+%% Generate the VSASL B1 and gradients
 
 vsType = 'DRHS';
 % vsType = 'DRHT';
@@ -27,10 +27,11 @@ vsType = 'DRHS';
 % vsType = 'BIR8';
 % vsType = 'FTVSI';
 
-% ADD options: velocity-compensated control
-% ADD FTVSI options: sinc, composite refocussing
+bvelCompCont = false; % velocity-compensated control (non-zero gradient in control) (not for BIR-4!)
+bcomposite   = true;  % composite refocussing pulses (FT-VSI only)
 
-[B1, GLabel, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS);
+% TODO: add FT-VSI options: sinc modulation
+[B1, GLabel, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite);
 
 % Convert to Hz and Hz/cm for Bloch simulations
 B1_Hz        = B1     * T.gam;
@@ -203,8 +204,8 @@ data2 = {tau,tau,tau};
 data3 = {mzCont,mzLabel,dmz};
 ti    = {'Control','Label','Difference'};
 cbl   = {'Mz/M_0','Mz/M_0','ΔMz/M_0'};
-if contains(vsType,'FTVSI'); clim = {[-1,0],[-1,0],[0,1]};
-else;                        clim = {[ 0,1],[ 0,1],[0,1]}; end
+if contains(vsType,'FTVSI'); clim = {[-1,0],[-1,0],[-1,1]};
+else;                        clim = {[ 0,1],[ 0,1],[-1,1]}; end
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
             'xlabel',{'Position (cm)'},'ylabel',{'Time constant (ms)'},'title',ti,...

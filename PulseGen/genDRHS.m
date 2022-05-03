@@ -40,10 +40,10 @@
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
 
-function [B1, gTag, gCont, T] = genDRHS(T, bSection)
+function [B1, gTag, gCont, T] = genDRHS(T, bSection, bvelCompCont)
 
 if ~exist('T'       ,'var') || isempty(T);        error('T must be specified!'); end
-if ~exist('bSection','var') || isempty(bSection); bSection = 'DRHS'; end
+if ~exist('bSection','var') || isempty(bSection); bSection = 'all'; end
 
 % Initialise outputs in case they are not set
 B1    = [];
@@ -53,20 +53,13 @@ gCont = [];
 RUP_GRD_ms = @(A) round(ceil(round(round(A,12)*1e3/T.GUP,9))*T.GUP*1e-3, 3);
 
 % Set the gradient polarities
-if ~isfield(T,'polTag')
-    T.polTag     = [ 1,-1, 1,-1];
-    T.polEffTag  = [ 1, 1,-1,-1];
-    T.polCont    = [ 0, 0, 0, 0];
-    T.polEffCont = [ 0, 0, 0, 0];
-    %T.PolCont    = [ 1, 1, 1, 1];
-    %T.PolEffCont = [ 1,-1,-1, 1];
-    %T.PolCont    = [-1,-1,-1,-1];
-    %T.PolEffCont = [-1, 1, 1,-1];
-end
+T.polTag = [ 1,-1, 1,-1];
+if bvelCompCont; T.polCont = [ 1, 1, 1, 1];
+else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulses
 
-if contains(bSection,'excite') || strcmp(bSection,'DRHS')
+if contains(bSection,'excite') || strcmp(bSection,'all')
 
     FA     = 90;  % Flip angle (degrees)
     phase1 = 0;   % Phase of flip down
@@ -92,7 +85,7 @@ end
 % amplitude is a cos^0.2(t) window, for t in (-π/2,π/2) (see Wong et al.
 % MRM 2006 http://doi.wiley.com/10.1002/mrm.20906)
 
-if contains(bSection,'refocus') || strcmp(bSection,'DRHS')
+if contains(bSection,'refocus') || strcmp(bSection,'all')
 
     beta  = 700.0;    % rad/s
     mu    = 5.96;     % shaping
@@ -115,7 +108,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(bSection,'VSgrad') || strcmp(bSection,'DRHS')
+if contains(bSection,'VSgrad') || strcmp(bSection,'all')
     
     gTag_VS  = genVSGrad(T, T.polTag );
     gCont_VS = genVSGrad(T, T.polCont);
@@ -128,7 +121,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(bSection,'combine') || strcmp(bSection,'DRHS')
+if contains(bSection,'combine') || strcmp(bSection,'all')
 
     % Gaps for VS gradients
     gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);

@@ -38,10 +38,10 @@
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, March 2021
 
-function [B1, gTag, gCont, T] = genBIR4(T, bSection)
+function [B1, gTag, gCont, T] = genBIR4(T, bSection, bvelCompCont)
 
 if ~exist('T'       ,'var') || isempty(T);        error('T must be specified!'); end
-if ~exist('bSection','var') || isempty(bSection); bSection = 'BIR4'; end
+if ~exist('bSection','var') || isempty(bSection); bSection = 'all'; end
 
 % Initialise outputs in case they are not set
 B1    = [];
@@ -54,16 +54,13 @@ zeta = 43.58;   % (s^-1)
 tkap = 69.65;   % tan of kappa
 
 % Set the gradient polarities
-if ~isfield(T,'polTag')
-    T.polTag     = [ 1, 1];
-    T.polEffTag  = [ 1,-1];
-    T.polCont    = [ 0, 0];
-    T.polEffCont = [ 0, 0];
-end
+T.polTag = [ 1, 1];
+if bvelCompCont; error('Cannot use velocity compensated control with BIR-4!');
+else;            T.polCont = [ 0, 0]; end
 
 %% Generate the BIR AHP pulses
 
-if contains(bSection,'excite') || strcmp(bSection,'BIR4')
+if contains(bSection,'excite') || strcmp(bSection,'all')
 
     [rho, theta, ~] = genBIR(wmax, zeta, tkap, T.RFe, T.RFUP);
     
@@ -78,7 +75,7 @@ end
 
 %% Generate the BIR AFP pulses
 
-if contains(bSection,'refocus') || strcmp(bSection,'BIR4')
+if contains(bSection,'refocus') || strcmp(bSection,'all')
     
     if ~exist('rho','var')
         [rho, theta] = genBIR(wmax, zeta, tkap, T.RFe, T.RFUP);
@@ -90,7 +87,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(bSection,'VSgrad') || strcmp(bSection,'BIR4')
+if contains(bSection,'VSgrad') || strcmp(bSection,'all')
     
     gTag_VS  = genVSGrad(T, T.polTag );
     gCont_VS = genVSGrad(T, T.polCont);
@@ -103,7 +100,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(bSection,'combine') || strcmp(bSection,'BIR4')
+if contains(bSection,'combine') || strcmp(bSection,'all')
     
     % Gaps for VS gradients
     gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);

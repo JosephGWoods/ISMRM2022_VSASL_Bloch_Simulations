@@ -42,10 +42,10 @@
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
 
-function [B1, gTag, gCont, T] = genFTVSI(T, section, bcomposite)
+function [B1, gTag, gCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite)
 
 if ~exist('T'         ,'var') || isempty(T);          error('T must be specified!'); end
-if ~exist('section'   ,'var') || isempty(section);    section    = 'FTVSI'; end
+if ~exist('section'   ,'var') || isempty(section);    section    = 'all'; end
 if ~exist('bcomposite','var') || isempty(bcomposite); bcomposite = true;    end
 
 % Initialise outputs in case they are not set
@@ -63,20 +63,13 @@ if ~isfield(T,'gamrad')
 end
 
 % Set the gradient polarities
-if ~isfield(T,'polTag')
-    T.polTag     = [ 1,-1, 1,-1];
-    T.polEffTag  = [ 1, 1,-1,-1];
-    T.polCont    = [ 0, 0, 0, 0];
-    T.polEffCont = [ 0, 0, 0, 0];
-    %T.polCont    = [ 1, 1, 1, 1];
-    %T.polEffCont = [ 1,-1,-1, 1];
-    %T.polCont    = [-1,-1,-1,-1];
-    %T.polEffCont = [-1, 1, 1,-1];
-end
+T.polTag = [ 1,-1, 1,-1];
+if bvelCompCont; T.polCont = [ 1, 1, 1, 1];
+else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulse
 
-if contains(section,'excite') || strcmp(section,'FTVSI')
+if contains(section,'excite') || strcmp(section,'all')
 
     FA     = 180/T.Nk; % excitation flip angle (degrees)
     phaseE = 0;        % phase of excitation pulse (+x)
@@ -93,7 +86,7 @@ end
 
 %% Generate the hard refocussing pulse
 
-if contains(section,'refocus') || strcmp(section,'FTVSI')
+if contains(section,'refocus') || strcmp(section,'all')
 
     FA     = 180;      % Flip angle (degrees)
     phaseR = [90,-90]; % Phase of refocussing pulses [+y, -y]
@@ -129,7 +122,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(section,'VSgrad') || strcmp(section,'FTVSI')
+if contains(section,'VSgrad') || strcmp(section,'all')
     
     gTag_VS  = genVSGrad(T, T.polTag );
     gCont_VS = genVSGrad(T, T.polCont);
@@ -142,7 +135,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(section,'combine') || strcmp(section,'FTVSI')
+if contains(section,'combine') || strcmp(section,'all')
 
     % Gaps for VS gradients
     gap1 = zeros(round( T.RFr1              *1e3/T.RFUP), 1); % Gap during G1

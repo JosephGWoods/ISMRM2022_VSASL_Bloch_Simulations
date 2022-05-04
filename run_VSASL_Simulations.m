@@ -283,9 +283,9 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 % the static tissue, so called "DC-bias".
 
 % Liu et al. proposed using dynamic phase cycling, where a 90° phase is
-% added to the refocussing pulses over x4 TRs. This spatially shifts the
-% stripe artifact in each acquisition so that it cancels out after
-% averaging the seperate acquisitions.
+% added to the refocussing pulses over x4 TRs. This changes the stripe
+% pattern in each acquisition so that it cancels out after averaging the
+% separate acquisitions.
 
 % This simulation demonstrates these spatial stripes and DC-bias and the
 % effect of phase cycling.
@@ -342,7 +342,7 @@ data3 = [squeeze(mat2cell( mzcont,length(B1scale),length(dp),ones(1,dynphase)))'
          squeeze(mat2cell(mzlabel,length(B1scale),length(dp),ones(1,dynphase)))',mzlabelMean,...
          squeeze(mat2cell(    dmz,length(B1scale),length(dp),ones(1,dynphase)))',dmzMean];
 ti    = [repmat({'Control'},1,dynphase),{'Control mean'},...
-         repmat({'Label'}  ,1,dynphase),{'LabeL mean'}   ,...
+         repmat({'Label'}  ,1,dynphase),{'Label mean'}   ,...
          repmat({'Difference'},1,dynphase),{'Difference mean'}];
 cbl   = [repmat({'Mz/M_0'},1,2*(dynphase+1)),repmat({'ΔMz/M_0'},1,dynphase+1)];
 clim  = [repmat({[-1,0]},1,2*(dynphase+1)),repmat({[-0.5,0.5]},1,dynphase+1)];
@@ -405,7 +405,7 @@ data3 = [squeeze(mat2cell( mzcontVox,length(B1scale),length(df),[1,1,1,1]))',mzc
          squeeze(mat2cell(mzlabelVox,length(B1scale),length(df),[1,1,1,1]))',mzabelMeanVox,...
          squeeze(mat2cell(    dmzVox,length(B1scale),length(df),[1,1,1,1]))',dmzMeanVox];
 ti    = [repmat({'Control'},1,dynphase),{'Control mean'},...
-         repmat({'Label'}  ,1,dynphase),{'LabeL mean'}   ,...
+         repmat({'Label'}  ,1,dynphase),{'Label mean'}   ,...
          repmat({'Difference'},1,dynphase),{'Difference mean'}];
 cbl   = [repmat({'Mz/M_0'},1,2*(dynphase+1)),repmat({'ΔMz/M_0'},1,dynphase+1)];
 clim  = [repmat({[-1,1]},1,2*(dynphase+1)),repmat({[-0.5,0.5]},1,dynphase+1)];

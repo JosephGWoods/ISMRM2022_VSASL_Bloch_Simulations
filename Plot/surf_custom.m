@@ -84,6 +84,7 @@ for ii = 1 : nAx
     end
     
 end
+sgtitle(p.name,'FontSize',p.titlefontsize+2);
 
     function p = parseInputs(inputs)
         

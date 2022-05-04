@@ -22,6 +22,8 @@ plot([-Vcut,-Vcut],[-1,2],'k--', 'LineWidth', 1);
 title('Laminar flow','FontSize',16);
 xlabel('Mean velocity (cm/s)','FontSize',16);
 ylabel('Mz','FontSize',16);
+
 legend('Label','Control','Difference','FontSize',18,'Location','southeast');
+sgtitle('Mz vs velocity','FontSize',20);
 
 end

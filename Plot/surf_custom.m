@@ -1,4 +1,4 @@
-function [fh,ah,ch] = surf_custom(varargin)
+function [fh,ch] = surf_custom(varargin)
 
 p = parseInputs(varargin);
 
@@ -16,18 +16,8 @@ elseif nAx == 2; fh = figure('Name',p.name,'Units','normalized','Position', [0, 
 else;            fh = figure('Name',p.name,'Units','normalized','Position', [0, 0, 1  , 1  ]); % Full screen
 end
 
-% ah = tight_subplot(rows, cols, [0.08,0.08], [0.1,0.05], [0.04,0.05]);
-ah = tight_subplot(rows, cols, [0.08,0.12], [0.1,0.12], [0.04,0.12]);
-if strcmp(p.order,'rows')
-    ah = reshape(ah,cols,rows);
-    ah = ah.'; % Transpose the axes to switch the order
-    ah = reshape(ah,rows*cols,1);
-end
-
 for ii = 1 : nAx
-    
-    axes(ah(ii));          % Make next axes the current axes
-    pos = ah(ii).Position; % Save position information for later
+    subplot(rows,cols,ii);
     
     % Plot the surf image
     switch p.nData
@@ -93,11 +83,6 @@ for ii = 1 : nAx
         zticks(p.ztick{ii});
     end
     
-    % Lastly, adjust colourbar and label position
-    if strcmp(p.colorbar{ii},'on')
-        ch.Position(1) = pos(1)+pos(3)+0.002;
-        ch.Label.Position(1) = 2.7;
-    end
 end
 
     function p = parseInputs(inputs)
@@ -130,7 +115,6 @@ end
         p.addParameter('labelfontsize', 16         , @isscalar);
         p.addParameter('titlefontsize', 16         , @isscalar);
         p.addParameter('view'         , 2          , @isnumeric);
-        p.addParameter('order'        , 'columns'  , @ischar   );
         p.addParameter('linestyle'    , 'none'     , @ischar);
         p.parse(inputs{:});
         p = p.Results;

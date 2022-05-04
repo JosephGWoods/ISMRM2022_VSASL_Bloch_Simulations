@@ -96,7 +96,7 @@ elseif strcmpi(func.vsType,'BIR4')
     
 elseif strcmpi(func.vsType,'FTVSI')
     % Multiplying Vcut by this factor is a hack to match the "1-crossing" to other methods
-    if func.bsinc; kluge = 0.86363;
+    if func.bsinc; kluge = 0.945474;
     else;          kluge = 1.240315; end
     A    = pi/(2*T.Vcut*kluge*T.gamrad*T.Nk*T.Gmax);
     B    = (T.vspad1+T.vspad2+T.RFr/2+T.RFe_2)*1e-3;  % in s

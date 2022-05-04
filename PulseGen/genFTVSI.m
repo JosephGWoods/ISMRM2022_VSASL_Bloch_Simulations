@@ -74,8 +74,9 @@ if contains(section,'excite') || strcmp(section,'all')
     FA     = 180; % total excitation flip angle (degrees)
     phaseE = 0;   % phase of excitation pulse (+x)
 
-    if bsinc % Sinc modulation (Guo et al. MRM 2021 https://doi.org/10.1002/mrm.28572)
-        FTmod = gensinc(FA, 0, T.Nk, 1, 1, 0, 1e3, T.units);                          % generate 9-point single-lobe non-windowed sinc
+    if bsinc
+        % Sinc modulation (Guo et al. MRM 2021 https://doi.org/10.1002/mrm.28572)
+        FTmod = sinc((1:T.Nk)/ceil(T.Nk/2)-1);                                        % generate Nk-point single-lobe non-windowed sinc
         FTmod = T.Nk * FTmod / sum(FTmod);                                            % normalise sinc modulation by T.Nk
         FA    = FA/T.Nk;                                                              % mean excitation flip angle (degrees)
         T.RFe = 1e-3 * ceil(1e6*max(FTmod)*FA*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % excitation duration (ms)

@@ -1,6 +1,6 @@
 function plot_VSprofile(Vcut,dv,lind,mzTag,mzCont,dmz,mzTag_laminar,mzCont_laminar,dmz_laminar)
 
-figure('Units','normalized','Position', [0.15, 1, 0.7, 0.4]);
+figure('Name','Mz vs velocity','Units','normalized','Position', [0.15, 1, 0.7, 0.4]);
 subplot(1,2,1); hold on;
 set(gca,'FontSize',14); grid on;
 plot(dv(lind), mzTag(lind), 'LineWidth', 2);

@@ -89,7 +89,7 @@ if bplotVS
         Gunits    = [units '/cm'];
     end
 
-    figure('Units','normalized','Position',[0,0.2,1,0.6]);
+    figure('Name','Velocity selective ASL module','Units','normalized','Position',[0,0.2,1,0.6]);
     for ii = 1:2
         subplot(2,1,ii);
         set(gca,'FontSize',12);
@@ -117,7 +117,7 @@ if bplotVS
         box on;
         xlim([0,T.t(end)]);
         xlabel('Time (ms)','FontSize',16);
-        title(['VSASL ' vsType ' module'],'FontSize',18);
+        title([vsType ' module'],'FontSize',18);
         if ii == 1; legend('|B_1^+|','G_{Label}','G_{Control}','FontSize',16,'Location','southwest');
         else;       legend('B_1^+ real','B_1^+ imag','G_{Label}','G_{Control}','FontSize',16,'Location','southwest');
         end

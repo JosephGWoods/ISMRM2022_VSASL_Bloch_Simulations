@@ -11,9 +11,9 @@ else
     cols = p.dim(2);
 end
 
-if     nAx == 1; fh = figure('Units','normalized','Position', [0, 0, 0.5, 0.5]); % Quarter screen
-elseif nAx == 2; fh = figure('Units','normalized','Position', [0, 0, 1  , 0.5]); % Half screen
-else;            fh = figure('Units','normalized','Position', [0, 0, 1  , 1  ]); % Full screen
+if     nAx == 1; fh = figure('Name',p.name,'Units','normalized','Position', [0, 0, 0.5, 0.5]); % Quarter screen
+elseif nAx == 2; fh = figure('Name',p.name,'Units','normalized','Position', [0, 0, 1  , 0.5]); % Half screen
+else;            fh = figure('Name',p.name,'Units','normalized','Position', [0, 0, 1  , 1  ]); % Full screen
 end
 
 ah = tight_subplot(rows, cols, [0.08,0.08], [0.1,0.05], [0.04,0.05]);
@@ -110,6 +110,7 @@ end
         p.addParameter('xlabel'       , {''}       , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('ylabel'       , {''}       , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('title'        , {''}       , @(x) iscell(x) && ischar(x{1}));
+        p.addParameter('name'         , ''         , @ischar);
         p.addParameter('color'        , {'default'}, @(x) iscell(x) && ischar(x{1}));
         p.addParameter('colorbar'     , {'on'}     , @(x) iscell(x) && ischar(x{1}));
         p.addParameter('colorbarlabel', {''}       , @(x) iscell(x) && ischar(x{1}));

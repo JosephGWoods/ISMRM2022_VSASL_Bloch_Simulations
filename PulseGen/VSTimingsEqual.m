@@ -32,17 +32,38 @@
 %      Nk     - number of FT-VSI excitation pulses
 %      All timings in ms
 %
-% Example timing layout for DRHS, DRHT, and FT-VSI:
+% Timing layout for DRHS, DRHT, and FT-VSI:
 %
 %              f                                                  f
 %             ___                                                ___
 %            /   \                                              /   \
 %          r/     \r                                          r/     \r
 % RFe______/       \______RFr______         ______RFrpad______/       \______RFr______         ______RFe
-%    vspad1         vspad2   vspad1\       /vspad2      vspad1         vspad2   vspad1\       /
+%    vspad1         vspad2   vspad1\       /vspad2      vspad1         vspad2   vspad1\       /vspad2
 %                                  r\     /r                                          r\     /r
 %                                    \___/                                              \___/
 %                                      f                                                  f
+%
+% Timing layout for BIR-8:
+%
+%              f                                                                       f
+%             ___                                                                     ___
+%            /   \                                                                   /   \
+%          r/     \r                                                               r/     \r
+% RFe______/       \______RFr______         ______RFr______         ______RFr______/       \______RFe
+%    vspad1         vspad2   vspad1\       /vspad2   vspad1\       /vspad2   vspad1         vspad2
+%                                  r\     /r               r\     /r
+%                                    \___/                   \___/
+%                                      f                       f
+%
+% Timing layout for BIR-4:
+%
+%              f                       f
+%             ___                     ___
+%            /   \                   /   \
+%          r/     \r               r/     \r
+% RFe______/       \______RFr______/       \______RFe
+%    vspad1         vspad2   vspad1         vspad2
 %
 % Written by Jia Guo and Joseph G. Woods, CFMRI, UCSD
 

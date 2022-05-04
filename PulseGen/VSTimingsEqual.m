@@ -29,6 +29,7 @@
 %      RFr2   - start time of 2nd refocussing pulse
 %      RFr3   - start time of 3rd refocussing pulse (BIR-8)
 %      RFrpad - time between the HS/HT pulses (DRHS/DRHT/FTVSI)
+%      Nk     - number of FT-VSI excitation pulses
 %      All timings in ms
 %
 % Example timing layout for DRHS, DRHT, and FT-VSI:

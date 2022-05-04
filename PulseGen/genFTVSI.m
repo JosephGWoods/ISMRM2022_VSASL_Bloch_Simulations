@@ -38,6 +38,7 @@
 %      RFr1   - start time of 1st refocussing pulse
 %      RFr2   - start time of 2nd refocussing pulse
 %      RFrpad - time between the HS pulses
+%      Nk     - number of FT-VSI excitation pulses
 %      All timings in ms
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020

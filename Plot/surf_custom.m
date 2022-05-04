@@ -16,7 +16,8 @@ elseif nAx == 2; fh = figure('Name',p.name,'Units','normalized','Position', [0, 
 else;            fh = figure('Name',p.name,'Units','normalized','Position', [0, 0, 1  , 1  ]); % Full screen
 end
 
-ah = tight_subplot(rows, cols, [0.08,0.08], [0.1,0.05], [0.04,0.05]);
+% ah = tight_subplot(rows, cols, [0.08,0.08], [0.1,0.05], [0.04,0.05]);
+ah = tight_subplot(rows, cols, [0.08,0.12], [0.1,0.12], [0.04,0.12]);
 if strcmp(p.order,'rows')
     ah = reshape(ah,cols,rows);
     ah = ah.'; % Transpose the axes to switch the order

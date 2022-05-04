@@ -42,6 +42,7 @@
 %      All timings in ms
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
+% Edited by Dapeng Liu, Johns Hopkins University, May 2022
 
 function [B1, gTag, gCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite, bsinc)
 

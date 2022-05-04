@@ -20,6 +20,7 @@
 %      T        - struct of gradient and RF parameters
 %
 % Written by Joseph G. Woods, University of Oxford, April 2022
+% Edited by Dapeng Liu, Johns Hopkins University, May 2022
 
 function [B1, GTag, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite, bsinc)
 

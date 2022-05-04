@@ -40,7 +40,7 @@ B1_Hz        = B1     * T.gam;
 GLabel_Hzcm  = GLabel * T.gam;
 GCont_Hzcm   = GCont  * T.gam;
 
-%% Bloch simulations - Mz vs velocity (velocity profile)
+%% Mz vs velocity (velocity profile)
 
 % Simulates label and control module for a range of velocities. Laminar
 % flow integration is then performed.
@@ -81,7 +81,7 @@ else;                        dmz = mzcont - mzlabel; end
 % Plot results
 plot_VSprofile(Vcut,dv,lind,mzlabel,mzcont,dmz,mzLabel_laminar,mzCont_laminar,dmz_laminar);
 
-%% Bloch simulations - B1 vs velocity
+%% B1 vs velocity
 
 % Simulates label and control module for a range of velocities and B1
 % scaling.
@@ -149,7 +149,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
             'clim',{[-1,1],[-1,1],[0,2]});
 
 
-%% Bloch simulations - off-resonance (B0) vs velocity
+%% Off-resonance (B0) vs velocity
 
 % Simulates label and control module for a range of velocities and
 % off-resonances.
@@ -206,7 +206,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
             'color',{'jet'},'colorbarlabel',cbl,...
             'clim',{[-1,1],[-1,1],[0,2]});
 
-%% Bloch simulations - eddy currents time constant vs position
+%% Eddy currents time constant vs position
 
 % Simulates label and control module for a range of positions and
 % eddy-current time constants.
@@ -266,7 +266,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
             'color',{'jet'},'colorbarlabel',cbl,...
             'yscale',{'log'},'clim',clim);
 
-%% Bloch simulations - B1 vs B0 (dyanamic phase cycling)
+%% B1 vs B0 (dyanamic phase cycling)
 
 % Simulates label and control module for a range of B0 and B1 scalings
 % averaged across a 4 mm voxel of static spins. Takes ≥1 minute to run.
@@ -290,13 +290,15 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 % This simulation demonstrates these spatial stripes and DC-bias and the
 % effect of phase cycling.
 
-% Tasks: 1. Run the simulation for using FT-VSI.
+% Tasks: 1. Run the simulations for using FT-VSI.
 %        2. What happens to the spatial stripes when off-resonance is 200 Hz?
-%        3. Is this a strong effect for the other VSASL modules?
+%        3. Is this as strong an effect for the other VSASL modules?
 
-% Split up the simulation into two parts for speed
+% The simulations have been split into two parts for speed:
+%  Part 1: simulate spatial stripes (fix off-resonance)
+%  Part 2: simulate DC-bias over B1scale and off-resonance
 
-%% First simulate spatial stripes (fix off-resonance)
+%% Part 1: simulate spatial stripes (fix off-resonance)
 
 B1scale = linspace(0.6,1.4,101);  % B1-variation (fraction)
 df      = 0;                      % off-resonance (Hz)
@@ -351,7 +353,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
             'color',{'jet'},'colorbarlabel',cbl,...
             'clim',clim,'dim',[3,dynphase+1]);
 
-%% Then simulate DC-bias over B1scale and off-resonance
+%% Part 2: simulate DC-bias over B1scale and off-resonance
 
 B1scale = linspace(0.6,1.4,41);  % B1-variation (fraction)
 df      = linspace(-300,300,41); % off-resonance (Hz)

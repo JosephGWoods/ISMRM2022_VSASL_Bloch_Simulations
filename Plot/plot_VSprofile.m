@@ -1,6 +1,6 @@
-function plot_VSprofile(Vcut,dv,lind,mzTag,mzCont,dmz,mzTag_laminar,mzCont_laminar,dmz_laminar)
+function plot_VSprofile(Vcut,dv,lind,mzTag,mzCont,dmz,mzTag_laminar,mzCont_laminar,dmz_laminar,vsType)
 
-figure('Name','Mz vs velocity','Units','normalized','Position', [0.15, 1, 0.7, 0.4]);
+figure('Name',['Mz vs velocity: ' vsType],'Units','normalized','Position', [0.15, 1, 0.7, 0.4]);
 subplot(1,2,1); hold on;
 set(gca,'FontSize',14); grid on;
 plot(dv(lind), mzTag(lind), 'LineWidth', 2);
@@ -24,6 +24,6 @@ xlabel('Mean velocity (cm/s)','FontSize',16);
 ylabel('Mz','FontSize',16);
 
 legend('Label','Control','Difference','FontSize',18,'Location','southeast');
-sgtitle('Mz vs velocity','FontSize',20);
+sgtitle(['Mz vs velocity: ' vsType],'FontSize',20);
 
 end

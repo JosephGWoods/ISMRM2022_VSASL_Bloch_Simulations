@@ -24,13 +24,13 @@ Mz_laminar = zeros(1,nv1+nv2+1);
 
 % Negative velocities
 for ii = 0:nv1
-    ind = findNearest(2*v(zvind-ii),v);         % find max velocity for current mean velocity (2*meanV)
+    ind = findNearest(2*v(zvind-ii),v);            % find max velocity for current mean velocity (2*meanV)
     Mz_laminar(nv1-ii+1) = mean(Mz(zvind:-1:ind)); % mean Mz across laminar flow profile
 end
 
 % Positive velocities
 for ii = 1:nv2
-    ind = findNearest(2*v(zvind+ii),v);        % find max velocity for current mean velocity (2*meanV)
+    ind = findNearest(2*v(zvind+ii),v);           % find max velocity for current mean velocity (2*meanV)
     Mz_laminar(nv1+ii+1) = mean(Mz(zvind:1:ind)); % mean Mz across laminar flow profile
 end
 

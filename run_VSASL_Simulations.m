@@ -8,7 +8,7 @@ addpath(genpath(filePath));
 %% General settings
 
 Vcut    = 2;             % velocity cutoff (cm/s)
-B1max   = 20 *1e-6;      % max B1+                (µT    -> T)
+B1max   = 20 *1e-6;      % max B1+ amplitude      (µT    -> T)
 Gmax    = 50 *1e-3*1e-2; % max gradient amplitude (mT/m  -> T/cm)
 SRmax   = 150*1e-2;      % max gradient slew rate (T/m/s -> T/cm/s)
 vspad1  = 0.1;           % padding time before gradients (ms)
@@ -22,10 +22,10 @@ T2      = inf;           % transverse relaxation time (s)
 
 %% Generate the VSASL B1 and gradients
 
-vsType = 'DRHS';
+% vsType = 'DRHS';
 % vsType = 'DRHT';
 % vsType = 'BIR4';
-% vsType = 'BIR8';
+vsType = 'BIR8';
 % vsType = 'FTVSI';
 
 bvelCompCont = false; % velocity-compensated control (not for BIR-4!) - false is zero-amplitude gradients in control
@@ -49,15 +49,21 @@ GCont_Hzcm   = GCont  * T.gam;
 % DHRS/DRHT/BIR-4/BIR-8, where m1 is the 1st moment of the gradients in the
 % VSASL modules. This correspondes to the velocity where the difference
 % signal velocity profile first reaches a value of 1 (or the edge of the
-% central lobe for the laminar flow case).
+% central sinc lobe for the laminar flow case).
 
-% While Vcut for FT-VSI can not be calculated using the same equation,
-% we can empirically calculate the necessary m1 in each FT-VSI encoding
+% While Vcut for FT-VSI cannot be calculated using the same equation, we
+% can empirically calculate the necessary m1 in each FT-VSI encoding
 % period so that the "1-crossing" of the velocity profile is equal to Vcut
-% (other definitions of Vcut are possible for FT-VSI).
+% (other definitions of Vcut are also possible).
+
+% Laminar flow is often assumed when illustrating the labeling process in
+% VSASL. Integrating the Mz profile over the laminar velocity distribution
+% (uniform from 0 to Vmax) can be numerically approximated by calculating
+% the mean Mz across a discrete set of velocities, where Vmean is Vmax/2
+% (see Wong et al. MRM 2006. https://doi.org/10.1002/mrm.20906)
 
 % Tasks: 1. Run the simulation for each VSASL module. What does the velocity
-%           profile look like for each module?
+%           profile look like in each case?
 %        2. What happens when Vcut is changed?
 
 B1scale = 1;                     % B1-variation (fraction)
@@ -79,7 +85,7 @@ else;                        dmz = mzcont - mzlabel; end
 [dmz_laminar    , lind] = laminarFlowInt(dmz    , dv);
 
 % Plot results
-plot_VSprofile(Vcut,dv,lind,mzlabel,mzcont,dmz,mzLabel_laminar,mzCont_laminar,dmz_laminar);
+plot_VSprofile(Vcut,dv,lind,mzlabel,mzcont,dmz,mzLabel_laminar,mzCont_laminar,dmz_laminar,vsType);
 
 %% B1 vs velocity
 
@@ -98,7 +104,7 @@ plot_VSprofile(Vcut,dv,lind,mzlabel,mzcont,dmz,mzLabel_laminar,mzCont_laminar,dm
 %           robust to B1 variation?
 %        2. Are both the label or control module sensitive to B1?
 %        3. For FT-VSI, try switching off the composite refocussing pulses
-%           (which uses hard refocussing pulses instead). What happens?
+%           (hard refocussing pulses are used instead). What happens?
 
 blaminar = false; % use laminar flow integration?
 
@@ -121,8 +127,8 @@ else;                        dmz = mzcont - mzlabel; end
 
 if blaminar % Laminar flow integration
     mzlabeldisp = zeros(length(B1scale),ceil(length(dv)/2));
-    mzcontdisp  = mzlabeldisp;
-    dmzdisp     = mzlabeldisp;
+    mzcontdisp  = zeros(length(B1scale),ceil(length(dv)/2));
+    dmzdisp     = zeros(length(B1scale),ceil(length(dv)/2));
     for ii = 1:length(B1scale)
         [mzlabeldisp(ii,:), ~   ] = laminarFlowInt(mzlabel(ii,:), dv);
         [mzcontdisp(ii,:) , ~   ] = laminarFlowInt(mzcont(ii,:) , dv);
@@ -143,7 +149,7 @@ ti    = {'Control','Label','Difference'};
 cbl   = {'Mz/M_0','Mz/M_0','ΔMz/M_0'};
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
-            'name','B1 vs velocity',...
+            'name',['B1 scale vs velocity: ' vsType],...
             'xlabel',{'Velocity (cm/s)'},'ylabel',{'B1^+ scale'},'title',ti,...
             'color',{'jet'},'colorbarlabel',cbl,...
             'clim',{[-1,1],[-1,1],[0,2]});
@@ -179,8 +185,8 @@ else;                        dmz = mzcont - mzlabel; end
 
 if blaminar % Laminar flow integration
     mzlabeldisp = zeros(length(df),ceil(length(dv)/2));
-    mzcontdisp  = mzlabeldisp;
-    dmzdisp     = mzlabeldisp;
+    mzcontdisp  = zeros(length(df),ceil(length(dv)/2));
+    dmzdisp     = zeros(length(df),ceil(length(dv)/2));
     for ii = 1:length(df)
         [mzlabeldisp(ii,:), ~   ] = laminarFlowInt(mzlabel(ii,:), dv);
         [mzcontdisp(ii,:) , ~   ] = laminarFlowInt(mzcont(ii,:) , dv);
@@ -201,7 +207,7 @@ ti    = {'Control','Label','Difference'};
 cbl   = {'Mz/M_0','Mz/M_0','ΔMz/M_0'};
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
-            'name','Off-resonance vs velocity',...
+            'name',['Off-resonance vs velocity: ' vsType],...
             'xlabel',{'Velocity (cm/s)'},'ylabel',{'Off-resonance (Hz)'},'title',ti,...
             'color',{'jet'},'colorbarlabel',cbl,...
             'clim',{[-1,1],[-1,1],[0,2]});
@@ -261,7 +267,7 @@ if contains(vsType,'FTVSI'); clim = {[-1,0],[-1,0],[-1,1]};
 else;                        clim = {[ 0,1],[ 0,1],[-1,1]}; end
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
-            'name','Eddy currents time constant vs position',...
+            'name',['Eddy currents time constant vs position: ' vsType],...
             'xlabel',{'Position (cm)'},'ylabel',{'Time constant (ms)'},'title',ti,...
             'color',{'jet'},'colorbarlabel',cbl,...
             'yscale',{'log'},'clim',clim);
@@ -269,7 +275,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 %% B1 vs B0 (dyanamic phase cycling)
 
 % Simulates label and control module for a range of B0 and B1 scalings
-% averaged across a 4 mm voxel of static spins. Takes ≥1 minute to run.
+% averaged across a 4 mm voxel of static spins.
 
 % Devations from the nominal B1 can lead to inaccurate refocussing for
 % FT-VSI (much less so for other VSASL modules that use adiabatic
@@ -348,10 +354,11 @@ cbl   = [repmat({'Mz/M_0'},1,2*(dynphase+1)),repmat({'ΔMz/M_0'},1,dynphase+1)];
 clim  = [repmat({[-1,0]},1,2*(dynphase+1)),repmat({[-0.5,0.5]},1,dynphase+1)];
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
-            'name','B1 vs position (dyanamic phase cycling)',...
+            'name',['B1 scale vs position (stripe-artifact: dyanamic phase cycling): ' vsType],...
             'xlabel',{'Position (cm)'},'ylabel',{'B1^+ scale'},'title',ti,...
             'color',{'jet'},'colorbarlabel',cbl,...
-            'clim',clim,'dim',[3,dynphase+1]);
+            'clim',clim,'dim',[3,dynphase+1],...
+            'labelfontsize',12);
 
 %% Part 2: simulate DC-bias over B1scale and off-resonance
 
@@ -411,7 +418,8 @@ cbl   = [repmat({'Mz/M_0'},1,2*(dynphase+1)),repmat({'ΔMz/M_0'},1,dynphase+1)];
 clim  = [repmat({[-1,1]},1,2*(dynphase+1)),repmat({[-0.5,0.5]},1,dynphase+1)];
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
-            'name','B1 vs off-resonance (dyanamic phase cycling)',...
+            'name',['B1 scale vs off-resonance (DC-bias, dyanamic phase cycling): ' vsType],...
             'xlabel',{'Off-resonance (Hz)'},'ylabel',{'B1^+ scale'},'title',ti,...
             'color',{'jet'},'colorbarlabel',cbl,...
-            'clim',clim,'dim',[3,dynphase+1]);
+            'clim',clim,'dim',[3,dynphase+1],...
+            'labelfontsize',12);

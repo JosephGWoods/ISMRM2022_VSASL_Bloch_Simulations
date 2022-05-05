@@ -11,8 +11,8 @@ Vcut    = 2;             % velocity cutoff (cm/s)
 B1max   = 20 *1e-6;      % max B1+ amplitude      (µT    -> T)
 Gmax    = 50 *1e-3*1e-2; % max gradient amplitude (mT/m  -> T/cm)
 SRmax   = 150*1e-2;      % max gradient slew rate (T/m/s -> T/cm/s)
-vspad1  = 0.1;           % padding time before gradients (ms)
-vspad2  = 0.1;           % padding time after gradients (ms)
+pad1    = 0.1;           % padding time before gradients (ms)
+pad2    = 0.1;           % padding time after gradients (ms)
 RFUP    = 10;            % RF update time (µs)
 GUP     = 10;            % gradient update time (µs)
 units   = 'T';           % Tesla
@@ -22,10 +22,10 @@ T2      = inf;           % transverse relaxation time (s)
 
 %% Generate the VSASL B1 and gradients
 
-% vsType = 'DRHS';
+vsType = 'DRHS';
 % vsType = 'DRHT';
 % vsType = 'BIR4';
-vsType = 'BIR8';
+% vsType = 'BIR8';
 % vsType = 'FTVSI';
 
 bvelCompCont = false; % velocity-compensated control (not for BIR-4!) - false is zero-amplitude gradients in control
@@ -33,7 +33,7 @@ bcomposite   = true;  % composite refocussing pulses (FT-VSI only) - false is ha
 bsinc        = false; % sinc modulation of excitation pulses (FT-VSI only) - false is rectangular modulation
 
 % Generate the B1 and gradients
-[B1, GLabel, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, vspad1, vspad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite, bsinc);
+[B1, GLabel, GCont, T] = genVSASL(vsType, Vcut, B1max, Gmax, SRmax, pad1, pad2, RFUP, GUP, units, bplotVS, bvelCompCont, bcomposite, bsinc);
 
 % Convert to Hz and Hz/cm for Bloch simulations
 B1_Hz        = B1     * T.gam;
@@ -228,7 +228,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 
 % Tasks: 1. Run the simulation for each VSASL module. Are some VSASL
 %           modules more sensitive to eddy currents than others? 
-%        2. What happens when vspad2 is increased to 2 ms?
+%        2. What happens when pad2 is increased to 2 ms?
 %        3. What happens when a velocity-compensated control module is used?
 %        4. (ADVANCED) Alter code to plot eddy currents against velocity
 %           for a fixed position of 24 cm to demonstrate how the velocity

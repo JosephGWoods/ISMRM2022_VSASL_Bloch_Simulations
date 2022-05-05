@@ -34,36 +34,36 @@
 %
 % Timing layout for DRHS, DRHT, and FT-VSI:
 %
-%              f                                                  f
-%             ___                                                ___
-%            /   \                                              /   \
-%          r/     \r                                          r/     \r
-% RFe______/       \______RFr______         ______RFrpad______/       \______RFr______         ______RFe
-%    vspad1         vspad2   vspad1\       /vspad2      vspad1         vspad2   vspad1\       /vspad2
-%                                  r\     /r                                          r\     /r
-%                                    \___/                                              \___/
-%                                      f                                                  f
+%            f                                          f
+%           ___                                        ___
+%          /   \                                      /   \
+%        r/     \r                                  r/     \r
+% RFe____/       \____RFr____         ____RFrpad____/       \____RFr____         ____RFe
+%    pad1         pad2   pad1\       /pad2      pad1         pad2   pad1\       /pad2
+%                            r\     /r                                  r\     /r
+%                              \___/                                      \___/
+%                                f                                          f
 %
 % Timing layout for BIR-8:
 %
-%              f                                                                       f
-%             ___                                                                     ___
-%            /   \                                                                   /   \
-%          r/     \r                                                               r/     \r
-% RFe______/       \______RFr______         ______RFr______         ______RFr______/       \______RFe
-%    vspad1         vspad2   vspad1\       /vspad2   vspad1\       /vspad2   vspad1         vspad2
-%                                  r\     /r               r\     /r
-%                                    \___/                   \___/
-%                                      f                       f
+%            f                                                           f
+%           ___                                                         ___
+%          /   \                                                       /   \
+%        r/     \r                                                   r/     \r
+% RFe____/       \____RFr____         ____RFr____         ____RFr____/       \____RFe
+%    pad1         pad2   pad1\       /pad2   pad1\       /pad2   pad1         pad2
+%                            r\     /r           r\     /r
+%                              \___/               \___/
+%                                f                   f
 %
 % Timing layout for BIR-4:
 %
-%              f                       f
-%             ___                     ___
-%            /   \                   /   \
-%          r/     \r               r/     \r
-% RFe______/       \______RFr______/       \______RFe
-%    vspad1         vspad2   vspad1         vspad2
+%            f                   f
+%           ___                 ___
+%          /   \               /   \
+%        r/     \r           r/     \r
+% RFe____/       \____RFr____/       \____RFe
+%    pad1         pad2   pad1         pad2
 %
 % Written by Jia Guo and Joseph G. Woods, CFMRI, UCSD
 
@@ -88,7 +88,7 @@ radicand = 0;
 % TODO: add comments and equations for clarity.
 
 if strcmpi(func.vsType,'DRHS') || strcmpi(func.vsType,'DRHT')
-    p        = (4*(T.vspad1+T.vspad2)+2*T.RFr+4*T.RFe_2+8*T.r)*1e3/dt; % In µs
+    p        = (4*(T.pad1+T.pad2)+2*T.RFr+4*T.RFe_2+8*T.r)*1e3/dt; % In µs
     radicand = 16*R*R-8*R*p+p*p+16*m1Target/(dt*dt*T.Gmax);
     optF     = ceil((-4*R-p+sqrt(radicand))/8); % Solve the m1tmp equation for F
     if strcmpi(func.gradAmp,'scale')
@@ -99,7 +99,7 @@ if strcmpi(func.vsType,'DRHS') || strcmpi(func.vsType,'DRHT')
 elseif strcmpi(func.vsType,'BIR8')
     % Due to symmetry can just calculate for one pair of the graients
     m1       = m1Target/2;
-    p        = 2*(T.vspad1+T.vspad2+T.RFr+T.r)*1e3/dt; % In µs
+    p        = 2*(T.pad1+T.pad2+T.RFr+T.r)*1e3/dt; % In µs
     radicand = 8*m1 + dt*dt*T.Gmax*p*p;
     optF     = ceil((-(dt*sqrt(T.Gmax)*(p + 4*R)) + sqrt(radicand))/(4*dt*sqrt(T.Gmax))); % Solve the m1tmp equation for F
     if strcmpi(func.gradAmp,'scale')
@@ -108,7 +108,7 @@ elseif strcmpi(func.vsType,'BIR8')
     T.Gmax   = m1/(dt*dt*(R + optF)*(p + 2*R + 2*optF));
     
 elseif strcmpi(func.vsType,'BIR4')
-    p = ceil((T.vspad1+T.vspad2+T.RFr)*1e3/dt);
+    p = ceil((T.pad1+T.pad2+T.RFr)*1e3/dt);
     radicand = 4*m1Target + dt*dt*T.Gmax*(p+R)*(p+R);
     optF = ceil((-(dt*sqrt(T.Gmax)*(p + 3*R)) + sqrt(radicand))/(2*dt*sqrt(T.Gmax)));
     if strcmpi(func.gradAmp,'scale')
@@ -122,14 +122,14 @@ elseif strcmpi(func.vsType,'FTVSI')
     if func.bsinc; kluge = 0.945474;
     else;          kluge = 1.240315; end
     A    = pi/(2*T.Vcut*kluge*T.gamrad*T.Nk*T.Gmax);
-    B    = (T.vspad1+T.vspad2+T.RFr/2+T.RFe_2)*1e-3;  % in s
+    B    = (T.pad1+T.pad2+T.RFr/2+T.RFe_2)*1e-3;  % in s
     f    = (sqrt(2*A+(B+T.r*1e-3)^2)-B-3*T.r*1e-3)/2; % in s
     optF = ceil(f*1e6/dt); % Gradient raster points
     if strcmpi(func.gradAmp,'scale')
         optF = max(1,optF);
     end
-    delta = T.r*1e-3 + optF*dt*1e-6;
-    sep = 2*(2*T.r*1e-3 + optF*dt*1e-6 + B);
+    delta  = T.r*1e-3 + optF*dt*1e-6;
+    sep    = 2*(2*T.r*1e-3 + optF*dt*1e-6 + B);
     T.Gmax = pi/(2*T.Vcut*kluge*T.gamrad*T.Nk*delta*sep);
     
 end
@@ -150,64 +150,64 @@ elseif strcmpi(func.vsType,'FTVSI'); T = gradtimingsFTVSI(T);
 end
 
     function [T] = gradtimingsDRHS(T)
-        T.ta1  = RUP_GRD_ms( T.vspad1                  );
-        T.td1  = RUP_GRD_ms( T.ta1 + T.r + T.f + T.r   );
-        T.RFr1 = RUP_GRD_ms( T.td1 + T.vspad2          );
-        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.vspad1 );
-        T.td2  = RUP_GRD_ms( T.ta2 + T.r + T.f + T.r   );
-        T.ta3  = RUP_GRD_ms( T.td2 + T.vspad2 + 2*T.RFe_2 + T.vspad1 );
-        T.td3  = RUP_GRD_ms( T.ta3 + T.r + T.f + T.r   );
-        T.RFr2 = RUP_GRD_ms( T.td3 + T.vspad2          );
-        T.ta4  = RUP_GRD_ms( T.RFr2 + T.RFr + T.vspad1 );
-        T.td4  = RUP_GRD_ms( T.ta4 + T.r + T.f + T.r   );
-        T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.vspad1+2*T.r+T.f+T.vspad2) ); % Inter-HS padding
+        T.ta1  = RUP_GRD_ms( T.pad1                  );
+        T.td1  = RUP_GRD_ms( T.ta1 + T.r + T.f + T.r );
+        T.RFr1 = RUP_GRD_ms( T.td1 + T.pad2          );
+        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.pad1 );
+        T.td2  = RUP_GRD_ms( T.ta2 + T.r + T.f + T.r );
+        T.ta3  = RUP_GRD_ms( T.td2 + T.pad2 + 2*T.RFe_2 + T.pad1 );
+        T.td3  = RUP_GRD_ms( T.ta3 + T.r + T.f + T.r );
+        T.RFr2 = RUP_GRD_ms( T.td3 + T.pad2          );
+        T.ta4  = RUP_GRD_ms( T.RFr2 + T.RFr + T.pad1 );
+        T.td4  = RUP_GRD_ms( T.ta4 + T.r + T.f + T.r );
+        T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.pad1+2*T.r+T.f+T.pad2) ); % Inter-HS padding
         if abs(T.RFrpad-RUP_GRD_ms(T.RFr2-(T.RFr1+T.RFr))) > T.RFUP; error('RFrpad is wrong'); end
-        T.sep23 = RUP_GRD_ms( T.ta3 - T.ta2    ); % Seperation between G2 and G3
-        T.RFe2  = RUP_GRD_ms( T.td4 + T.vspad2 ); % Start time of flip up RF
-        T.Tvs   = RUP_GRD_ms( T.RFe2 + 2*T.RFe ); % Total VS module time
+        T.sep23 = RUP_GRD_ms( T.ta3 - T.ta2          ); % Seperation between G2 and G3
+        T.RFe2  = RUP_GRD_ms( T.td4 + T.pad2         ); % Start time of flip up RF
+        T.Tvs   = RUP_GRD_ms( T.RFe2 + 2*T.RFe       ); % Total VS module time
     end
 
     function [T] = gradtimingsBIR8(T)
-        T.ta1  = RUP_GRD_ms( T.vspad1                  );
-        T.td1  = RUP_GRD_ms( T.ta1  + T.r + T.f + T.r  );
-        T.RFr1 = RUP_GRD_ms( T.td1  + T.vspad2         );
-        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.vspad1 );
-        T.td2  = RUP_GRD_ms( T.ta2  + T.r + T.f + T.r  );
-        T.RFr2 = RUP_GRD_ms( T.td2  + T.vspad2         );
-        T.ta3  = RUP_GRD_ms( T.RFr2 + T.RFr + T.vspad1 );
-        T.td3  = RUP_GRD_ms( T.ta3  + T.r + T.f + T.r  );
-        T.RFr3 = RUP_GRD_ms( T.td3  + T.vspad2         );
-        T.ta4  = RUP_GRD_ms( T.RFr3 + T.RFr + T.vspad1 );
-        T.td4  = RUP_GRD_ms( T.ta4  + T.r + T.f + T.r  );
-        T.RFe2 = RUP_GRD_ms( T.td4 + T.vspad2          ); % Start time of flip up RF
-        T.Tvs  = RUP_GRD_ms( T.RFe2 + 2*T.RFe          ); % Total VS module time
+        T.ta1  = RUP_GRD_ms( T.pad1                   );
+        T.td1  = RUP_GRD_ms( T.ta1  + T.r + T.f + T.r );
+        T.RFr1 = RUP_GRD_ms( T.td1  + T.pad2          );
+        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.pad1  );
+        T.td2  = RUP_GRD_ms( T.ta2  + T.r + T.f + T.r );
+        T.RFr2 = RUP_GRD_ms( T.td2  + T.pad2          );
+        T.ta3  = RUP_GRD_ms( T.RFr2 + T.RFr + T.pad1  );
+        T.td3  = RUP_GRD_ms( T.ta3  + T.r + T.f + T.r );
+        T.RFr3 = RUP_GRD_ms( T.td3  + T.pad2          );
+        T.ta4  = RUP_GRD_ms( T.RFr3 + T.RFr + T.pad1  );
+        T.td4  = RUP_GRD_ms( T.ta4  + T.r + T.f + T.r );
+        T.RFe2 = RUP_GRD_ms( T.td4 + T.pad2           ); % Start time of flip up RF
+        T.Tvs  = RUP_GRD_ms( T.RFe2 + 2*T.RFe         ); % Total VS module time
     end
 
     function [T] = gradtimingsBIR4(T)
-        T.ta1  = RUP_GRD_ms( T.vspad1                  );
-        T.td1  = RUP_GRD_ms( T.ta1  + T.r + T.f + T.r  );
-        T.RFr1 = RUP_GRD_ms( T.td1  + T.vspad2         );
-        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.vspad1 );
-        T.td2  = RUP_GRD_ms( T.ta2  + T.r + T.f + T.r  );
-        T.RFe2 = RUP_GRD_ms( T.td2 + T.vspad2          ); % Start time of flip up RF
-        T.Tvs  = RUP_GRD_ms( T.RFe2 + 2*T.RFe          ); % Total VS module time
+        T.ta1  = RUP_GRD_ms( T.pad1                   );
+        T.td1  = RUP_GRD_ms( T.ta1  + T.r + T.f + T.r );
+        T.RFr1 = RUP_GRD_ms( T.td1  + T.pad2          );
+        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.pad1  );
+        T.td2  = RUP_GRD_ms( T.ta2  + T.r + T.f + T.r );
+        T.RFe2 = RUP_GRD_ms( T.td2 + T.pad2           ); % Start time of flip up RF
+        T.Tvs  = RUP_GRD_ms( T.RFe2 + 2*T.RFe         ); % Total VS module time
     end
 
     function [T] = gradtimingsFTVSI(T)
-        T.ta1  = RUP_GRD_ms( T.vspad1                  );
-        T.td1  = RUP_GRD_ms( T.ta1 + T.r + T.f + T.r   );
-        T.RFr1 = RUP_GRD_ms( T.td1 + T.vspad2          );
-        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.vspad1 );
-        T.td2  = RUP_GRD_ms( T.ta2 + T.r + T.f + T.r   );
-        T.ta3  = RUP_GRD_ms( T.td2 + T.vspad2 + 2*T.RFe_2 + T.vspad1 );
-        T.td3  = RUP_GRD_ms( T.ta3 + T.r + T.f + T.r   );
-        T.RFr2 = RUP_GRD_ms( T.td3 + T.vspad2          );
-        T.ta4  = RUP_GRD_ms( T.RFr2 + T.RFr + T.vspad1 );
-        T.td4  = RUP_GRD_ms( T.ta4 + T.r + T.f + T.r   );
-        T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.vspad1+2*T.r+T.f+T.vspad2) ); % Inter-HS padding
+        T.ta1  = RUP_GRD_ms( T.pad1                  );
+        T.td1  = RUP_GRD_ms( T.ta1 + T.r + T.f + T.r );
+        T.RFr1 = RUP_GRD_ms( T.td1 + T.pad2          );
+        T.ta2  = RUP_GRD_ms( T.RFr1 + T.RFr + T.pad1 );
+        T.td2  = RUP_GRD_ms( T.ta2 + T.r + T.f + T.r );
+        T.ta3  = RUP_GRD_ms( T.td2 + T.pad2 + 2*T.RFe_2 + T.pad1 );
+        T.td3  = RUP_GRD_ms( T.ta3 + T.r + T.f + T.r );
+        T.RFr2 = RUP_GRD_ms( T.td3 + T.pad2          );
+        T.ta4  = RUP_GRD_ms( T.RFr2 + T.RFr + T.pad1 );
+        T.td4  = RUP_GRD_ms( T.ta4 + T.r + T.f + T.r );
+        T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.pad1+2*T.r+T.f+T.pad2) ); % Inter-HS padding
         if abs(T.RFrpad-RUP_GRD_ms(T.RFr2-(T.RFr1+T.RFr))) > T.RFUP; error('RFrpad is wrong'); end
         T.sep23 = RUP_GRD_ms( T.ta3 - T.ta2      ); % Seperation between G2 and G3
-        T.RFe2  = RUP_GRD_ms( T.td4 + T.vspad2   ); % Start time of flip up RF
+        T.RFe2  = RUP_GRD_ms( T.td4 + T.pad2     ); % Start time of flip up RF
         T.Tvs   = RUP_GRD_ms( 8*T.RFe2 + 9*T.RFe ); % Total VS module time
     end
 

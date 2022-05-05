@@ -1,24 +1,21 @@
 %% Function to generate an Fourier-transform velocity selective inversion velocity selective module
 %
-% [B1, gTag, gCont, T] = genFTVSI(T, bSection)
+% [B1, GLabel, GCont, T] = genFTVSI(T, bSection)
 %
 % in:
-%      T          - struct containing velocity selective module timings (ms
-%                   except GUP and RFUP in µs).
-%      Section    - which section of the module to generate: 'excite',
-%                   'refocus', 'VSgrad', 'combine', or 'FTVSI'.
-%                 - option 'FTVSI' generates and combines all sections.
-%                 - the options can be combined to generate multiple
-%                   sections at once, e.g. 'VSgradcombine' generates the
-%                   VSgrad section and combines VSgrad with premade
-%                   excitation and refocussing sections passed in with T.
-%      bcomposite - true for composite refocussing pulses (90x-180y-90x),
-%                   false for hard refocussing pulses (180x).
+%      T            - struct of gradient and RF parameters 
+%      bSection     - sections of the module to generate: 'excite',
+%                     'refocus', 'VSgrad', 'combine', or 'all'
+%      bvelCompCont - flag to use velocity-compensated control
+%      bcomposite   - flag to use composite refocussing pulses
+%                     (90x-180y-90x). If false, hard refocussing pulses
+%                     (180x) are used
 %
 % out:
-%      B1 - complex B1+ waveform (Gauss - default)
-%      g  - gradient waveform (same units as T.Gmax)
-%      T  - updated struct with the generated RF and gradient waveforms
+%      B1     - complex B1+ waveform (units of B1max)
+%      GLabel - label module gradient waveform  (units of Gmax)
+%      GCont  - control module gradient waveform (units of Gmax)
+%      T      - updated struct of gradient and RF parameters
 %
 % T parameter descriptions:
 %      GUP    - gradient update time (µs)
@@ -42,18 +39,19 @@
 %      All timings in ms
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
+% Updated by Joseph G. Woods, University of Oxford, April 2022
 % Edited by Dapeng Liu, Johns Hopkins University, May 2022
 
-function [B1, gTag, gCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite, bsinc)
+function [B1, GLabel, GCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite, bsinc)
 
 if ~exist('T'         ,'var') || isempty(T);          error('T must be specified!'); end
 if ~exist('section'   ,'var') || isempty(section);    section    = 'all'; end
 if ~exist('bcomposite','var') || isempty(bcomposite); bcomposite = true;    end
 
 % Initialise outputs in case they are not set
-B1    = [];
-gTag  = [];
-gCont = [];
+B1     = [];
+GLabel = [];
+GCont  = [];
 
 if ~isfield(T,'gamrad')
     switch T.units
@@ -65,7 +63,7 @@ if ~isfield(T,'gamrad')
 end
 
 % Set the gradient polarities
-T.polTag = [ 1,-1, 1,-1];
+T.polLabel = [ 1,-1, 1,-1];
 if bvelCompCont; T.polCont = [ 1, 1, 1, 1];
 else;            T.polCont = [ 0, 0, 0, 0]; end
 
@@ -112,9 +110,9 @@ if contains(section,'refocus') || strcmp(section,'all')
         % Generate the composite pulse (see Liu et al. MRM 2021. doi:https://doi.org/10.1002/mrm.28310)
         dur1  = 1e-3 * ceil(1e6*(FA/2)*pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; %  90° (ms)
         dur2  = 1e-3 * ceil(1e6* FA   *pi/180/(T.gamrad*T.B1max)/T.GUP)*T.GUP; % 180° (ms)
-        T.RFr = dur1 + dur2 + dur1;                                % total duration
-        B1_1  = genhard(FA/2,  0, dur1, T.B1max, T.RFUP, T.units); %  90° has 0° phase
-        B1_2  = genhard(FA  , 90, dur2, T.B1max, T.RFUP, T.units); % 180° has 90° phase
+        T.RFr = dur1 + dur2 + dur1;                                            % total duration
+        B1_1  = genhard(FA/2,  0, dur1, T.B1max, T.RFUP, T.units);             %  90° has 0° phase
+        B1_2  = genhard(FA  , 90, dur2, T.B1max, T.RFUP, T.units);             % 180° has 90° phase
         B1_refocus = [B1_1; B1_2; B1_1];
     end
     
@@ -137,12 +135,12 @@ end
 
 if contains(section,'VSgrad') || strcmp(section,'all')
     
-    gTag_VS  = genVSGrad(T, T.polTag );
-    gCont_VS = genVSGrad(T, T.polCont);
+    gLabel = genVSGrad(T, T.polLabel);
+    gCont  = genVSGrad(T, T.polCont );
     
     % Increase resolution of waveform to match the RF pulses
-    T.gTag_VS  = increaseres(gTag_VS,  round(T.GUP/T.RFUP));
-    T.gCont_VS = increaseres(gCont_VS, round(T.GUP/T.RFUP));
+    T.gLabel = increaseres(gLabel, round(T.GUP/T.RFUP));
+    T.gCont  = increaseres(gCont , round(T.GUP/T.RFUP));
     
 end
     
@@ -159,7 +157,7 @@ if contains(section,'combine') || strcmp(section,'all')
 
     B1 = []; B1_2 = []; B1_3 = []; B1_4 = [];
     for ii = 1 : 2 : length(pc)        
-        %      [           excite;  G1 ;      refocus           ;G2+G3;      refocus              ;  G4 ];
+        %      [           excite                ;  G1 ;      refocus           ;G2+G3;      refocus              ;  G4 ];
         B1   = [B1;   T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus(:,pc(ii)) ; gap2; T.B1_refocus(:,pc(ii+1))  ; gap3]; % 1st phase
         B1_2 = [B1_2; T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus2(:,pc(ii)); gap2; T.B1_refocus2(:,pc(ii+1)) ; gap3]; % 2nd phase
         B1_3 = [B1_3; T.B1_excite*FTmod((ii+1)/2); gap1; T.B1_refocus3(:,pc(ii)); gap2; T.B1_refocus3(:,pc(ii+1)) ; gap3]; % 3rd phase
@@ -173,15 +171,15 @@ if contains(section,'combine') || strcmp(section,'all')
     T.B1(:,3) = [B1_3; T.B1_excite*FTmod(end)];
     T.B1(:,4) = [B1_4; T.B1_excite*FTmod(end)];
     
-    gTag = [T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...
-            T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...
-            T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; ...
-            T.grad_excite; T.gTag_VS; T.grad_excite; T.gTag_VS; T.grad_excite ];
+    GLabel = [T.grad_excite; T.gLabel; T.grad_excite; T.gLabel; ...
+              T.grad_excite; T.gLabel; T.grad_excite; T.gLabel; ...
+              T.grad_excite; T.gLabel; T.grad_excite; T.gLabel; ...
+              T.grad_excite; T.gLabel; T.grad_excite; T.gLabel; T.grad_excite];
      
-    gCont = [T.grad_excite; T.gCont_VS; T.grad_excite; T.gCont_VS; ...
-             T.grad_excite; T.gCont_VS; T.grad_excite; T.gCont_VS; ...
-             T.grad_excite; T.gCont_VS; T.grad_excite; T.gCont_VS; ...
-             T.grad_excite; T.gCont_VS; T.grad_excite; T.gCont_VS; T.grad_excite ];
+    GCont = [T.grad_excite; T.gCont; T.grad_excite; T.gCont; ...
+             T.grad_excite; T.gCont; T.grad_excite; T.gCont; ...
+             T.grad_excite; T.gCont; T.grad_excite; T.gCont; ...
+             T.grad_excite; T.gCont; T.grad_excite; T.gCont; T.grad_excite];
     
 end
  

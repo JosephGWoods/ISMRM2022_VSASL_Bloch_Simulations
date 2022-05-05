@@ -1,22 +1,18 @@
 %% Function to generate a double-refocussed hyperbolic-secant velocity selective module
 %
-% [B1, gTag, gCont, T] = genDRHS(T, bSection)
+% [B1, GLabel, GCont, T] = genDRHS(T, bSection, bvelCompCont)
 %
 % in:
-%      T        - struct containing velocity selective module timings (ms
-%                 except GUP in µs) 
-%      bSection - which section of the module to generate: 'excite',
-%                 'refocus', 'VSgrad', 'combine', or 'DRHS'
-%               - option 'DRHS' generates and combines all sections
-%               - the options can be combined to generate multiple
-%                 sections at once, e.g. 'VSgradcombine' generates the
-%                 VSgrad section and combines VSgrad with premade
-%                 excitation and refocussing sections passed in with T.
+%      T            - struct of gradient and RF parameters 
+%      bSection     - sections of the module to generate: 'excite',
+%                     'refocus', 'VSgrad', 'combine', or 'all'
+%      bvelCompCont - flag to use velocity-compensated control
 %
 % out:
-%      B1 - complex B1+ waveform
-%      g  - gradient waveform (same units as T.Gmax)
-%      T  - updated struct with the generated RF and gradient waveforms
+%      B1     - complex B1+ waveform (units of B1max)
+%      GLabel - label module gradient waveform  (units of Gmax)
+%      GCont  - control module gradient waveform (units of Gmax)
+%      T      - updated struct of gradient and RF parameters
 %
 % T parameter descriptions:
 %      GUP    - gradient update time (µs)
@@ -39,27 +35,28 @@
 %      All timings in ms
 %
 % Written by Joseph G. Woods, CFMRI, UCSD, June 2020
+% Updated by Joseph G. Woods, University of Oxford, April 2022
 
-function [B1, gTag, gCont, T] = genDRHS(T, bSection, bvelCompCont)
+function [B1, GLabel, GCont, T] = genDRHS(T, bSection, bvelCompCont)
 
 if ~exist('T'       ,'var') || isempty(T);        error('T must be specified!'); end
 if ~exist('bSection','var') || isempty(bSection); bSection = 'all'; end
 
 % Initialise outputs in case they are not set
-B1    = [];
-gTag  = [];
-gCont = [];
+B1     = [];
+GLabel = [];
+GCont  = [];
 
 RUP_GRD_ms = @(A) round(ceil(round(round(A,12)*1e3/T.GUP,9))*T.GUP*1e-3, 3);
 
 % Set the gradient polarities
-T.polTag = [ 1,-1, 1,-1];
+T.polLabel = [ 1,-1, 1,-1];
 if bvelCompCont; T.polCont = [ 1, 1, 1, 1];
 else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulses
 
-if contains(bSection,'excite') || strcmp(bSection,'all')
+if contains(bSection,'excite') || strcmpi(bSection,'all')
 
     FA     = 90;  % Flip angle (degrees)
     phase1 = 0;   % Phase of flip down
@@ -85,7 +82,7 @@ end
 % amplitude is a cos^0.2(t) window, for t in (-π/2,π/2) (see Wong et al.
 % MRM 2006 http://doi.wiley.com/10.1002/mrm.20906)
 
-if contains(bSection,'refocus') || strcmp(bSection,'all')
+if contains(bSection,'refocus') || strcmpi(bSection,'all')
 
     beta  = 700.0;    % rad/s
     mu    = 5.96;     % shaping
@@ -108,25 +105,25 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(bSection,'VSgrad') || strcmp(bSection,'all')
+if contains(bSection,'VSgrad') || strcmpi(bSection,'all')
     
-    gTag_VS  = genVSGrad(T, T.polTag );
-    gCont_VS = genVSGrad(T, T.polCont);
+    gLabel = genVSGrad(T, T.polLabel);
+    gCont  = genVSGrad(T, T.polCont );
     
     % Increase resolution of waveform to match the RF pulses
-    T.gTag_VS  = increaseres(gTag_VS,  round(T.GUP/T.RFUP));
-    T.gCont_VS = increaseres(gCont_VS, round(T.GUP/T.RFUP));
+    T.gLabel = increaseres(gLabel, round(T.GUP/T.RFUP));
+    T.gCont  = increaseres(gCont , round(T.GUP/T.RFUP));
     
 end
     
 %% Combine the whole VS module
     
-if contains(bSection,'combine') || strcmp(bSection,'all')
+if contains(bSection,'combine') || strcmpi(bSection,'all')
 
     % Gaps for VS gradients
-    gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);
-    gap2 = zeros(round((T.RFr2-T.RFr1-T.RFr)*1e3/T.RFUP), 1);
-    gap3 = zeros(round((T.RFe2-T.RFr2-T.RFr)*1e3/T.RFUP), 1);
+    gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);                % Gap during G1
+    gap2 = zeros(round((T.RFr2-T.RFr1-T.RFr)*1e3/T.RFUP), 1); % Gap during G2 and G3
+    gap3 = zeros(round((T.RFe2-T.RFr2-T.RFr)*1e3/T.RFUP), 1); % Gap during G4
     
     %        [     excite;   G1 ;      refocus      ;G2+G3;      refocus      ;  G4 ;      excite ];
     B1     = [T.B1_excite1; gap1; T.B1_refocus(:,1) ; gap2; T.B1_refocus(:,2) ; gap3; T.B1_excite2];
@@ -137,8 +134,8 @@ if contains(bSection,'combine') || strcmp(bSection,'all')
     T.B1(:,3) = [T.B1_excite1; gap1; T.B1_refocus3(:,1); gap2; T.B1_refocus3(:,2); gap3; T.B1_excite2]; % 3rd phase
     T.B1(:,4) = [T.B1_excite1; gap1; T.B1_refocus4(:,1); gap2; T.B1_refocus4(:,2); gap3; T.B1_excite2]; % 4th phase
     
-    gTag  = [T.grad_excite1; T.gTag_VS ; T.grad_excite2];
-    gCont = [T.grad_excite1; T.gCont_VS; T.grad_excite2];
+    GLabel = [T.grad_excite1; T.gLabel; T.grad_excite2];
+    GCont  = [T.grad_excite1; T.gCont ; T.grad_excite2];
     
 end
  

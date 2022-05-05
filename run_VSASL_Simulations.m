@@ -84,8 +84,8 @@ dv      = linspace(-40,40,1001); % velocity (cm/s)
 [~,~,mzcont]  = bloch_Hz(B1scale*B1_Hz, GCont_Hzcm , RFUP*1e-6, T1, T2, df, dp, dv, 0); % Control
 
 % ASL subtraction
-if contains(vsType,'FTVSI'); dmz = mzlabel - mzcont;
-else;                        dmz = mzcont - mzlabel; end
+if strcmpi(vsType,'FTVSI'); dmz = mzlabel - mzcont;
+else;                       dmz = mzcont - mzlabel; end
 
 % Laminar flow integration
 [mzLabel_laminar, ~   ] = laminarFlowInt(mzlabel, dv);
@@ -130,8 +130,8 @@ for ii = 1:length(B1scale)
 end
 
 % ASL subtraction
-if contains(vsType,'FTVSI'); dmz = mzlabel  - mzcont;
-else;                        dmz = mzcont - mzlabel; end
+if strcmpi(vsType,'FTVSI'); dmz = mzlabel  - mzcont;
+else;                       dmz = mzcont - mzlabel; end
 
 if blaminar % Laminar flow integration
     mzlabeldisp = zeros(length(B1scale),ceil(length(dv)/2));
@@ -188,8 +188,8 @@ dv      = linspace(-20,20,101);   % velocity (cm/s)
 [~,~,mzcont ] = bloch_Hz(B1scale*B1_Hz, GCont_Hzcm , RFUP*1e-6, T1, T2, df, dp, dv, 0); % Control
 
 % ASL subtraction
-if contains(vsType,'FTVSI'); dmz = mzlabel - mzcont;
-else;                        dmz = mzcont - mzlabel; end
+if strcmpi(vsType,'FTVSI'); dmz = mzlabel - mzcont;
+else;                       dmz = mzcont - mzlabel; end
 
 if blaminar % Laminar flow integration
     mzlabeldisp = zeros(length(df),ceil(length(dv)/2));
@@ -286,8 +286,8 @@ for ii = 1:length(tau)
 end
 
 % ASL subtraction
-if contains(vsType,'FTVSI'); dmz = mzlabel - mzcont;
-else;                        dmz = mzcont - mzlabel; end
+if strcmpi(vsType,'FTVSI'); dmz = mzlabel - mzcont;
+else;                       dmz = mzcont - mzlabel; end
 
 % Plot data
 data1 = {dp,dp,dp};
@@ -295,8 +295,8 @@ data2 = {tau,tau,tau};
 data3 = {mzcont,mzlabel,dmz};
 ti    = {'Control','Label','Difference'};
 cbl   = {'Mz/M_0','Mz/M_0','ΔMz/M_0'};
-if contains(vsType,'FTVSI'); clim = {[-1,0],[-1,0],[-1,1]};
-else;                        clim = {[ 0,1],[ 0,1],[-1,1]}; end
+if strcmpi(vsType,'FTVSI'); clim = {[-1,0],[-1,0],[-1,1]};
+else;                       clim = {[ 0,1],[ 0,1],[-1,1]}; end
 
 surf_custom('data1',data1,'data2',data2,'data3',data3,...
             'name',['Eddy currents time constant vs position: ' vsType],...
@@ -363,8 +363,8 @@ for jj = 1:dynphase
     end
 
     % ASL subtraction
-    if contains(vsType,'FTVSI'); dmz(:,:,jj) = mzlabel(:,:,jj) - mzcont(:,:,jj);
-    else;                        dmz(:,:,jj) = mzcont(:,:,jj) - mzlabel(:,:,jj); end
+    if strcmpi(vsType,'FTVSI'); dmz(:,:,jj) = mzlabel(:,:,jj) - mzcont(:,:,jj);
+    else;                       dmz(:,:,jj) = mzcont(:,:,jj) - mzlabel(:,:,jj); end
 
 end
 
@@ -419,8 +419,8 @@ for jj = 1:dynphase
     end
 
     % ASL subtraction
-    if contains(vsType,'FTVSI'); dmz(:,:,:,jj) = mzlabel(:,:,:,jj) - mzcont(:,:,:,jj);
-    else;                        dmz(:,:,:,jj) = mzcont(:,:,:,jj) - mzlabel(:,:,:,jj); end
+    if strcmpi(vsType,'FTVSI'); dmz(:,:,:,jj) = mzlabel(:,:,:,jj) - mzcont(:,:,:,jj);
+    else;                       dmz(:,:,:,jj) = mzcont(:,:,:,jj) - mzlabel(:,:,:,jj); end
 
 end
 

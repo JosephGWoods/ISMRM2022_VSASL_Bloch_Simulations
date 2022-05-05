@@ -15,11 +15,10 @@
 %      T      - updated struct of gradient and RF parameters
 %
 % T parameter descriptions:
-%      GUP    - gradient update time (µs)
+%      B1max  - B1+ maximum amplitdue (units)
+%      Gmax   - maximum gradient amplitude (units/cm)
 %      RFUP   - RF update time (µs)
-%      Gmax   - max gradient amplitude (units/cm)
-%      SRmax  - max gradient slew rate (units/cm/s
-%      B1max  - max B1+ amplitude (units)
+%      GUP    - gradient update time (µs)
 %      units  - B1+ and gradient units ('G', 'T', 'Hz')
 %      f      - gradient flat top time
 %      r      - gradient rise time

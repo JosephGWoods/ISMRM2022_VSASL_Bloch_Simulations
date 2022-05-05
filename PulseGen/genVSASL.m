@@ -40,7 +40,7 @@ end
 T = struct('Vcut',Vcut,'B1max',B1max,'Gmax',Gmax,'SRmax',SRmax,'pad1',pad1,'pad2',pad2, ...
     'RFUP',RFUP,'GUP',GUP,'units',units,'gam',gam,'gamrad',2*pi*gam);
 
-func = struct('vsType',vsType,'gradAmp','scale','bsinc',bsinc);
+func = struct('vsType',vsType,'bsinc',bsinc,'gradAmp','scale');
 func.RUP_GRD_ms = @(A) round(ceil(round(round(A,12)*1e3/GUP,9))*GUP*1e-3, 3);
 func.Vcut2m1    = @(x) pi/(T.gamrad*2*x);
 

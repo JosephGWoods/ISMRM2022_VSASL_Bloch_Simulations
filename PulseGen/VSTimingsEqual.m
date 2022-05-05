@@ -11,11 +11,14 @@
 %      T  - updated struct with the generated RF and gradient timings
 %
 % T parameter descriptions:
-%      GUP    - gradient update time (µs)
+%      Vcut   - velocity cutoff (cm/s)
+%      B1max  - B1+ maximum amplitdue (units)
+%      Gmax   - maximum gradient amplitude (units/cm)
+%      SRmax  - maximum gradient slew rate (units/cm/s)
+%      pad1   - pre-gradient padding
+%      pad2   - post-gradient padding
 %      RFUP   - RF update time (µs)
-%      Gmax   - max gradient amplitude (units/cm)
-%      SRmax  - max gradient slew rate (units/cm/s
-%      B1max  - max B1+ amplitude (units)
+%      GUP    - gradient update time (µs)
 %      units  - B1+ and gradient units ('G', 'T', 'Hz')
 %      f      - gradient flat top time
 %      r      - gradient rise time
@@ -34,15 +37,15 @@
 %
 % Timing layout for DRHS, DRHT, and FT-VSI:
 %
-%            f                                          f
-%           ___                                        ___
-%          /   \                                      /   \
-%        r/     \r                                  r/     \r
-% RFe____/       \____RFr____         ____RFrpad____/       \____RFr____         ____RFe
-%    pad1         pad2   pad1\       /pad2      pad1         pad2   pad1\       /pad2
-%                            r\     /r                                  r\     /r
-%                              \___/                                      \___/
-%                                f                                          f
+%            f                                           f
+%           ___                                         ___
+%          /   \                                       /   \
+%        r/     \r                                   r/     \r
+% RFe____/       \____RFr____         ____2*RFe_2____/       \____RFr____         ____RFe
+%    pad1         pad2   pad1\       /pad2       pad1         pad2   pad1\       /pad2
+%                            r\     /r                                   r\     /r
+%                              \___/                                       \___/
+%                                f                                           f
 %
 % Timing layout for BIR-8:
 %
@@ -162,7 +165,6 @@ end
         T.td4  = RUP_GRD_ms( T.ta4 + T.r + T.f + T.r );
         T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.pad1+2*T.r+T.f+T.pad2) ); % Inter-HS padding
         if abs(T.RFrpad-RUP_GRD_ms(T.RFr2-(T.RFr1+T.RFr))) > T.RFUP; error('RFrpad is wrong'); end
-        T.sep23 = RUP_GRD_ms( T.ta3 - T.ta2          ); % Seperation between G2 and G3
         T.RFe2  = RUP_GRD_ms( T.td4 + T.pad2         ); % Start time of flip up RF
         T.Tvs   = RUP_GRD_ms( T.RFe2 + 2*T.RFe       ); % Total VS module time
     end
@@ -204,9 +206,8 @@ end
         T.RFr2 = RUP_GRD_ms( T.td3 + T.pad2          );
         T.ta4  = RUP_GRD_ms( T.RFr2 + T.RFr + T.pad1 );
         T.td4  = RUP_GRD_ms( T.ta4 + T.r + T.f + T.r );
-        T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.pad1+2*T.r+T.f+T.pad2) ); % Inter-HS padding
+        T.RFrpad = RUP_GRD_ms( 2*(T.RFe_2+T.pad1+2*T.r+T.f+T.pad2) );
         if abs(T.RFrpad-RUP_GRD_ms(T.RFr2-(T.RFr1+T.RFr))) > T.RFUP; error('RFrpad is wrong'); end
-        T.sep23 = RUP_GRD_ms( T.ta3 - T.ta2      ); % Seperation between G2 and G3
         T.RFe2  = RUP_GRD_ms( T.td4 + T.pad2     ); % Start time of flip up RF
         T.Tvs   = RUP_GRD_ms( 8*T.RFe2 + 9*T.RFe ); % Total VS module time
     end

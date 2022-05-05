@@ -4,7 +4,7 @@ This is the MATLAB code used for the Velocity Selective ASL Bloch simulation tut
 
 `run_VSASL_Simulations.m` is the top level file for generating the VSASL modules and running the simulations.
 
-Bloch simulations are performed using an adapted version of Brian Hargreaves' MEX Bloch simulation code. The original version may be found at http://www-mrsrl.stanford.edu/~brian/blochsim/. If you would like to learn more about Bloch simulations, Brian has a nice tutorial here: http://www-mrsrl.stanford.edu/~brian/bloch/.
+Bloch simulations are performed using an adapted version of Brian Hargreaves' MEX Bloch simulation code. The original version may be found at http://www-mrsrl.stanford.edu/~brian/blochsim/. If you would like to learn more about Bloch simulations in general, Brian has a nice tutorial here: http://www-mrsrl.stanford.edu/~brian/bloch/.
 
 This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford), [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University), [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
 

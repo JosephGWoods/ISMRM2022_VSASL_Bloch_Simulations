@@ -118,7 +118,7 @@ void invmat(double *mat, double *imat)
     for (count=0; count<9; count++)
     {
         *imat = *imat / det;
-        *imat++;
+        imat++;
     }
 }
 

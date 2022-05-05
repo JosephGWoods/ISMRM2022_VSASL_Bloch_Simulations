@@ -1,9 +1,17 @@
 %% Bloch simimulations: velocity-selective ASL modules
 % Written by Joseph G. Woods and Dapeng Liu
 
-% Add containing folder to MATLAB path
+% Add containing folder to MATLAB path and cd to it
 filePath = fileparts(matlab.desktop.editor.getActiveFilename);
 addpath(genpath(filePath));
+cd(filePath)
+
+% If you cannot use the pre-compiled bloch_Hz MEX functions, please try the
+% following:
+% 1. cd Bloch
+% 2. mex -setup C
+% 3. mex bloch_Hz.c -compatibleArrayDims
+% 4. cd ..
 
 %% General settings
 

@@ -219,18 +219,42 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 
 % Eddy currents can be modelled as a convolution between the intended
 % gradient and an exponential decaying gradient field, known as the eddy
-% current field. The exponential decay has a time constant and amplitude.
+% current field. The exponential decay is characterised by a time constant
+% and amplitude.
 
 % Eddy current fields can be non-spatially varying (B0 term) or have linear
 % or higher order components. A Z-gradient can induce eddy current fields
-% that vary spatially along Z or other directions, but here we just
-% consider linear eddy currents terms parallel to the intended gradient.
+% that vary spatially along Z as well as other directions, but here we just
+% consider individual linear eddy currents terms parallel to the intended
+% gradient.
+
+% Eddy current artifacts in VSASL occur due to a non-zero 0th gradient
+% moment resulting from the unbalanced phase accrual due to eddy currents.
+% The dominant effect of this is the "labeling" of static tissue, which can
+% result in a larger difference signal than the perfusion signal of
+% interest.
+
+% Some VSASL modules are less sensitive to eddy currents due to their
+% design. However, eddy current artifacts can also be reduced by increasing
+% pad2 or decreasing the maximum gradient amplitude (see Meakin and Jezzard
+% MRM 2013. https://doi.org/10.1002/mrm.24302 and Guo et al. MRM 2015.
+% https://doi.org/10.1002/mrm.25227). These approaches are explored in this
+% simulation.
+
+% More complicated methods for reducing eddy current artifacts include
+% adjusting the gradient timings (see Woods et al. ISMRM 2021.
+% https://cds.ismrm.org/protected/21MPresentations/abstracts/2720.html) or
+% by using higher order pre-emphasis (see Zhao et al. ISMRM 2021.
+% https://cds.ismrm.org/protected/21MPresentations/abstracts/3961.html).
+% These are not explored in this simulation.
 
 % Tasks: 1. Run the simulation for each VSASL module. Are some VSASL
 %           modules more sensitive to eddy currents than others? 
 %        2. What happens when pad2 is increased to 2 ms?
-%        3. What happens when a velocity-compensated control module is used?
-%        4. (ADVANCED) Alter code to plot eddy currents against velocity
+%        3. What happens when Gmax is reduced to 20 mT/m?
+%        4. What are the downsides of increasing pad2 or decreasing Gmax?
+%        5. What happens when a velocity-compensated control module is used?
+%        6. (ADVANCED) Alter code to plot eddy currents against velocity
 %           for a fixed position of 24 cm to demonstrate how the velocity
 %           profile is distorted by eddy current effects.
 

@@ -68,7 +68,7 @@ else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulse
 
-if contains(section,'excite') || strcmp(section,'all')
+if strcmpi(section,'excite') || strcmp(section,'all')
 
     FA     = 180; % total excitation flip angle (degrees)
     phaseE = 0;   % phase of excitation pulse (+x)
@@ -96,7 +96,7 @@ end
 
 %% Generate the hard refocussing pulse
 
-if contains(section,'refocus') || strcmp(section,'all')
+if strcmpi(section,'refocus') || strcmp(section,'all')
 
     FA     = 180;      % Flip angle (degrees)
     phaseR = [90,-90]; % Phase of refocussing pulses [+y, -y]
@@ -132,7 +132,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(section,'VSgrad') || strcmp(section,'all')
+if strcmpi(section,'VSgrad') || strcmp(section,'all')
     
     gLabel = genVSGrad(T, T.polLabel);
     gCont  = genVSGrad(T, T.polCont );
@@ -145,7 +145,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(section,'combine') || strcmp(section,'all')
+if strcmpi(section,'combine') || strcmp(section,'all')
 
     % Gaps for VS gradients
     gap1 = zeros(round( T.RFr1              *1e3/T.RFUP), 1); % Gap during G1

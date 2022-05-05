@@ -55,7 +55,7 @@ else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulses
 
-if contains(bSection,'excite') || strcmpi(bSection,'all')
+if strcmpi(bSection,'excite') || strcmpi(bSection,'all')
 
     FA     = 90;  % Flip angle (degrees)
     phase1 = 0;   % Phase of flip down
@@ -81,7 +81,7 @@ end
 % amplitude is a cos^0.2(t) window, for t in (-π/2,π/2) (see Wong et al.
 % MRM 2006 http://doi.wiley.com/10.1002/mrm.20906)
 
-if contains(bSection,'refocus') || strcmpi(bSection,'all')
+if strcmpi(bSection,'refocus') || strcmpi(bSection,'all')
 
     beta  = 700.0;    % rad/s
     mu    = 5.96;     % shaping
@@ -104,7 +104,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(bSection,'VSgrad') || strcmpi(bSection,'all')
+if strcmpi(bSection,'VSgrad') || strcmpi(bSection,'all')
     
     gLabel = genVSGrad(T, T.polLabel);
     gCont  = genVSGrad(T, T.polCont );
@@ -117,7 +117,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(bSection,'combine') || strcmpi(bSection,'all')
+if strcmpi(bSection,'combine') || strcmpi(bSection,'all')
 
     % Gaps for VS gradients
     gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);                % Gap during G1

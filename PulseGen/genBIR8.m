@@ -58,7 +58,7 @@ else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the BIR AHP pulses
 
-if contains(bSection,'excite') || strcmpi(bSection,'all')
+if strcmpi(bSection,'excite') || strcmpi(bSection,'all')
 
     [rho, theta, ~] = genBIR(wmax, zeta, tkap, T.RFe, T.RFUP);
     
@@ -73,7 +73,7 @@ end
 
 %% Generate the BIR AFP pulses
 
-if contains(bSection,'refocus') || strcmpi(bSection,'all')
+if strcmpi(bSection,'refocus') || strcmpi(bSection,'all')
     
     if ~exist('rho','var')
         [rho, theta] = genBIR(wmax, zeta, tkap, T.RFe, T.RFUP);
@@ -90,7 +90,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if contains(bSection,'VSgrad') || strcmpi(bSection,'all')
+if strcmpi(bSection,'VSgrad') || strcmpi(bSection,'all')
     
     gLabel = genVSGrad(T, T.polLabel);
     gCont  = genVSGrad(T, T.polCont );
@@ -103,7 +103,7 @@ end
     
 %% Combine the whole VS module
     
-if contains(bSection,'combine') || strcmpi(bSection,'all')
+if strcmpi(bSection,'combine') || strcmpi(bSection,'all')
     
     % Gaps for VS gradients
     gap1 = zeros(round(T.RFr1*1e3/T.RFUP), 1);                % Gap during G1

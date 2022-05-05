@@ -47,7 +47,8 @@ func.Vcut2m1    = @(x) pi/(T.gamrad*2*x);
 % Get/set module specicific timings (some are specified in the "gen*.m" files)
 switch vsType
     case 'DRHS'
-        [~,~,~,T] = genDRHS(T, 'exciterefocus', bvelCompCont); % get rf timings
+        [~,~,~,T] = genDRHS(T, 'excite' , bvelCompCont); % get rf timings
+        [~,~,~,T] = genDRHS(T, 'refocus', bvelCompCont); % get rf timings
     case 'DRHT'
         [~,~,~,T] = genDRHT(T, 'excite', bvelCompCont); % get rf timings
         T.RFr     = 3; % adiabatic full passage duration (ms)
@@ -61,7 +62,8 @@ switch vsType
         T.RFr   = 3;   % adiabatic full passage duration (ms)
     case 'FTVSI'
         T.Nk      = 9; % number of excitations
-        [~,~,~,T] = genFTVSI(T, 'exciterefocus', bvelCompCont, bcomposite, bsinc); % get RF timings
+        [~,~,~,T] = genFTVSI(T, 'excite' , bvelCompCont, bcomposite, bsinc); % get RF timings
+        [~,~,~,T] = genFTVSI(T, 'refocus', bvelCompCont, bcomposite, bsinc); % get RF timings
 end
 
 % Calculate VSASL gradient flat top duration to achieve specified Vcut

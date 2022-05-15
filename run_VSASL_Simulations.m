@@ -124,7 +124,7 @@ dv      = linspace(-20,20,101);  % velocity (cm/s)
 % Run Bloch simulations
 mzlabel = zeros(length(B1scale), length(dv));
 mzcont  = zeros(length(B1scale), length(dv));
-for ii = 1:length(B1scale)
+for ii = 1:length(B1scale) % Change for to parfor for speed
     [~,~,mzlabel(ii,:)] = bloch_Hz(B1scale(ii)*B1_Hz, GLabel_Hzcm, RFUP*1e-6, T1, T2, df, dp, dv, 0); % Label
     [~,~,mzcont(ii,:)]  = bloch_Hz(B1scale(ii)*B1_Hz, GCont_Hzcm , RFUP*1e-6, T1, T2, df, dp, dv, 0); % Control
 end
@@ -280,7 +280,7 @@ dv      = 0;                    % velocity (cm/s)
 % Run Bloch simulations
 mzlabel = zeros(length(tau),length(dp));
 mzcont  = zeros(length(tau),length(dp));
-for ii = 1:length(tau)
+for ii = 1:length(tau) % Change for to parfor for speed
     [~,~,mzlabel(ii,:)] = bloch_Hz(B1scale*B1_Hz, GLabel_EC_Hzcm(:,ii), RFUP*1e-6, T1, T2, df, dp, dv, 0); % Label
     [~,~,mzcont(ii,:)]  = bloch_Hz(B1scale*B1_Hz, GCont_EC_Hzcm(:,ii) , RFUP*1e-6, T1, T2, df, dp, dv, 0); % Control
 end
@@ -338,7 +338,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 
 %% Part 1: simulate spatial stripes (fix off-resonance)
 
-B1scale = linspace(0.6,1.4,101);  % B1-variation (fraction)
+B1scale = linspace( 0.6,1.4,101); % B1-variation (fraction)
 df      = 0;                      % off-resonance (Hz)
 dp      = linspace(-0.2,0.2,101); % position (cm)
 dv      = 0;                      % velocity (cm/s)
@@ -357,7 +357,7 @@ for jj = 1:dynphase
     B1_Hz = T.B1(:,jj) * T.gam; % phase cycle refocussing pulses
 
     % Run Bloch simulations
-    for ii = 1:length(B1scale)
+    for ii = 1:length(B1scale) % Change for to parfor for speed
         [~,~,mzlabel(ii,:,jj)] = bloch_Hz(B1scale(ii)*B1_Hz, GLabel_Hzcm, RFUP*1e-6, T1, T2, df, dp, dv, 0);
         [~,~,mzcont(ii,:,jj)]  = bloch_Hz(B1scale(ii)*B1_Hz, GCont_Hzcm , RFUP*1e-6, T1, T2, df, dp, dv, 0);
     end
@@ -394,7 +394,7 @@ surf_custom('data1',data1,'data2',data2,'data3',data3,...
 
 %% Part 2: simulate DC-bias over B1scale and off-resonance
 
-B1scale = linspace(0.6,1.4,41);  % B1-variation (fraction)
+B1scale = linspace( 0.6,1.4,41); % B1-variation (fraction)
 df      = linspace(-300,300,41); % off-resonance (Hz)
 dp      = linspace(-0.2,0.2,11); % position (cm)
 dv      = 0;                     % velocity (cm/s)
@@ -413,7 +413,7 @@ for jj = 1:dynphase
     B1_Hz = T.B1(:,jj) * T.gam; % phase cycle refocussing pulses
 
     % Run Bloch simulations
-    for ii = 1:length(B1scale)
+    for ii = 1:length(B1scale) % Change for to parfor for speed
         [~,~,mzlabel(ii,:,:,jj)] = bloch_Hz(B1scale(ii)*B1_Hz, GLabel_Hzcm, RFUP*1e-6, T1, T2, df, dp, dv, 0);
         [~,~,mzcont(ii,:,:,jj)]  = bloch_Hz(B1scale(ii)*B1_Hz, GCont_Hzcm , RFUP*1e-6, T1, T2, df, dp, dv, 0);
     end
@@ -430,12 +430,12 @@ mzcontMean  = mean(mzcont ,4);
 dmzMean     = mean(dmz    ,4);
 
 % Mean over voxel
-mzlabelVox    = squeeze(mean(mzlabel,2));
-mzcontVox     = squeeze(mean(mzcont ,2));
-dmzVox        = squeeze(mean(dmz    ,2));
+mzlabelVox    = squeeze(mean(mzlabel    ,2));
+mzcontVox     = squeeze(mean(mzcont     ,2));
+dmzVox        = squeeze(mean(dmz        ,2));
 mzabelMeanVox = squeeze(mean(mzlabelMean,2));
-mzcontMeanVox = squeeze(mean(mzcontMean,2));
-dmzMeanVox    = squeeze(mean(dmzMean,2));
+mzcontMeanVox = squeeze(mean(mzcontMean ,2));
+dmzMeanVox    = squeeze(mean(dmzMean    ,2));
 
 % Plot data across B1 and positions at max off-resonance (stripe-artifacts)
 data1 = repmat({df,df,df},1,dynphase+1);

@@ -1,6 +1,6 @@
 # ISMRM2022 VSASL Bloch Simulations
 
-This is the MATLAB code used for the Velocity Selective ASL Bloch simulation tutorial at ISMRM 2022
+This is the MATLAB code used for the [Velocity Selective ASL Bloch simulation tutorial at ISMRM 2022](https://submissions.mirasmart.com/ISMRM2022/Itinerary/ConferenceMatrixEventDetail.aspx?ses=MIT-02).
 
 `run_VSASL_Simulations.m` is the top level file for generating the VSASL modules and running the simulations.
 

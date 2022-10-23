@@ -4,7 +4,7 @@
 %
 % in:
 %      shape - 'a'=linear ramp up, 'f'=flat top, 'd'=linear ramp down,
-%              't'=trapezoid, 's'=sine, 'rect'=rectangle, 'c'=1-cosine
+%              't'=trapezoid
 %      Gmax  - Maximum gradient amplitude (Units chosen by user: G/cm, mT/m, Hz/cm, etc)
 %      r     - ramp time (ms)
 %      f     - flat top time (ms)
@@ -56,18 +56,18 @@ for ii = 1:nshape
     switch shape(ii)
         
         case 'a' % linear ramp up
-            G = Gmax(ii) * round( 1 : 1 : nr(ii) ) / nr(ii);
+            G = Gmax(ii) * (round(1:1:nr(ii))-0.5) / nr(ii);
             
         case 'f' % flat top
             G = Gmax(ii) * ones(1, nf(ii));
             
         case 'd' % linear ramp down
-            G = Gmax(ii) * round( nr(ii)-1 : -1 : 0 ) / nr(ii);
+            G = Gmax(ii) * (round(nr(ii):-1:1)-0.5) / nr(ii);
             
         case 't' % trapezoid
-            ru = round( 1 : 1 : nr(ii) ) / nr(ii);
+            ru = (round(1:1:nr(ii))-0.5) / nr(ii);
             ft = ones(1, nf(ii));
-            rd = round( nr(ii)-1 : -1 : 0 ) / nr(ii);
+            rd = (round(nr(ii):-1:1)-0.5) / nr(ii);
             G  = Gmax(ii) * [ru, ft, rd];
             
     end

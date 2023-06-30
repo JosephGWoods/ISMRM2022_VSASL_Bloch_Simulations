@@ -62,7 +62,7 @@ end
 if length(GUP)>1; error('GUP should be a scalar'); end
 
 % Create the time array for this gradient
-t = (GUP : GUP : GUP*tL)'; % (µs)
+t = ((1:1:tL)-0.5)'*GUP; % (µs) Time course (evaluate at midpoint of each gradient raster period)
 
 % Repmat vectors to have the same size
 if GL  >1; t   = repmat(t  , 1 , GL); end

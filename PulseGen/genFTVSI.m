@@ -43,9 +43,11 @@
 
 function [B1, GLabel, GCont, T] = genFTVSI(T, section, bvelCompCont, bcomposite, bsinc)
 
-if ~exist('T'         ,'var') || isempty(T);          error('T must be specified!'); end
-if ~exist('section'   ,'var') || isempty(section);    section    = 'all'; end
-if ~exist('bcomposite','var') || isempty(bcomposite); bcomposite = true;    end
+if ~exist('T'         ,'var')   || isempty(T);            error('T must be specified!'); end
+if ~exist('section'   ,'var')   || isempty(section);      section      = 'all';   end
+if ~exist('bvelCompCont','var') || isempty(bvelCompCont); bvelCompCont = false;    end
+if ~exist('bcomposite','var')   || isempty(bcomposite);   bcomposite   = true;    end
+if ~exist('bsinc'     ,'var')   || isempty(bsinc);        bsinc        = false;   end
 
 % Initialise outputs in case they are not set
 B1     = [];
@@ -68,7 +70,7 @@ else;            T.polCont = [ 0, 0, 0, 0]; end
 
 %% Generate the hard excitation pulse
 
-if strcmpi(section,'excite') || strcmp(section,'all')
+if strcmpi(section,'excite') || strcmpi(section,'all')
 
     FA     = 180; % total excitation flip angle (degrees)
     phaseE = 0;   % phase of excitation pulse (+x)
@@ -96,7 +98,7 @@ end
 
 %% Generate the hard refocussing pulse
 
-if strcmpi(section,'refocus') || strcmp(section,'all')
+if strcmpi(section,'refocus') || strcmpi(section,'all')
 
     FA     = 180;      % Flip angle (degrees)
     phaseR = [90,-90]; % Phase of refocussing pulses [+y, -y]
@@ -132,7 +134,7 @@ end
 
 %% Generate the velocity encoding gradients
 
-if strcmpi(section,'VSgrad') || strcmp(section,'all')
+if strcmpi(section,'VSgrad') || strcmpi(section,'all')
     
     gLabel = genVSGrad(T, T.polLabel);
     gCont  = genVSGrad(T, T.polCont );
@@ -145,7 +147,7 @@ end
     
 %% Combine the whole VS module
     
-if strcmpi(section,'combine') || strcmp(section,'all')
+if strcmpi(section,'combine') || strcmpi(section,'all')
 
     % Gaps for VS gradients
     gap1 = zeros(round( T.RFr1              *1e3/T.RFUP), 1); % Gap during G1

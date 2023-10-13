@@ -68,13 +68,10 @@ bw     = 1/(dur*1e-3);     % Calculate the bandwidth of the RF pulse in Hz
 % Form rectangular pulse envelope
 B1 = ones(N, 1);
 
-% Add constant phase to B1+ pulse
-B1 = B1 .* exp(1i * phase);
-
 %% Calculate B1max required to achieve flip angle
 
 % Pulse integral
-area = dt * 1e-6 * sum( sqrt(real(B1).^2 + imag(B1).^2) );
+area = dt * 1e-6 * sum(B1);
 
 % B1max calculation (hard pulse FA scales linearly with B1max)
 B1maxCalc = FA / ( gamrad * area );
@@ -82,4 +79,8 @@ if B1maxCalc > B1max; error('B1 of hard pulse is > B1max'); end
 
 % Scale RF pulse to achieve flip angle
 B1 = B1 * B1maxCalc;
+
+%% Add constant phase to B1+ pulse
+
+B1 = B1 .* exp(1i * phase);
 

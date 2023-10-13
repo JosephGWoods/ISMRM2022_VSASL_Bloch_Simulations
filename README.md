@@ -6,9 +6,13 @@ This is the MATLAB code used for the [Velocity Selective ASL Bloch simulation tu
 
 Bloch simulations are performed using an adapted version of Brian Hargreaves' MEX Bloch simulation code. The original version may be found at http://www-mrsrl.stanford.edu/~brian/blochsim/. If you would like to learn more about Bloch simulations in general, Brian has a nice tutorial here: http://www-mrsrl.stanford.edu/~brian/bloch/.
 
-This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford), [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University), [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
+This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford) and [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University) with input from [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
 
-If you use this tutorial for your own teaching, or use some part of the code for any reason, the authors would appreciate that appropriate credit is given.
+If you use this tutorial for your own teaching, or use some part of the code for any reason, please cite the following:
+
+Woods JG, Liu D. Hands-on: Bloch Equation Simulation of VS Labeling. In: Proceedings of the 30th Annual Meeting of the ISMRM, London, UK, 2022. p. MIT–02.
+
+Woods JG, Liu D. (2022). Bloch Equation Simulation of VS Labeling (V1.0). Zenodo. https://doi.org/10.5281/zenodo.10000979
 
 ## Code Contributors
 
@@ -39,6 +43,4 @@ Most recent to oldest:
 16. Wu WC, Wong EC. Intravascular effect in velocity-selective arterial spin labeling: The choice of inflow time and cutoff velocity. NeuroImage. 2006;32(1):122-128. doi:https://doi.org/10.1016/j.neuroimage.2006.03.001
 17. Wong EC, Cronin M, Wu WC, Inglis B, Frank LR, Liu TT. Velocity-selective arterial spin labeling. Magnetic Resonance in Medicine. 2006;55(6):1334-1341. doi:https://doi.org/10.1002/mrm.20906
 18. Norris DG, Schwarzbauer C. Velocity Selective Radiofrequency Pulse Trains. Journal of Magnetic Resonance. 1999;137(1):231-236. doi:https://doi.org/10.1006/jmre.1998.1690
-
-
 

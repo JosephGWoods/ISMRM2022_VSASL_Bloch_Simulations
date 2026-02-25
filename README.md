@@ -6,7 +6,7 @@ This is the MATLAB code used for the [Velocity Selective ASL Bloch simulation tu
 
 Bloch simulations are performed using an adapted version of Brian Hargreaves' MEX Bloch simulation code. The original version may be found at http://www-mrsrl.stanford.edu/~brian/blochsim/. If you would like to learn more about Bloch simulations in general, Brian has a nice tutorial here: http://www-mrsrl.stanford.edu/~brian/bloch/.
 
-This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford) and [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University) with input from [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
+This tutorial was designed and written by [Joseph G. Woods](https://www.ndcn.ox.ac.uk/team/joseph-woods) (University of Oxford) with input from [Dapeng Liu](https://www.researchgate.net/profile/Dapeng-Liu-12) (Johns Hopkins University), [Qin Qin](https://www.hopkinsmedicine.org/profiles/details/qin-qin) (Johns Hopkins University), and  [Yuriko Suzuki](https://www.win.ox.ac.uk/people/yuriko-suzuki) (University of Oxford).
 
 If you use this tutorial for your own teaching, or use some part of the code for any reason, please cite the following:
 
@@ -23,7 +23,7 @@ Woods JG, Liu D. (2022). Bloch Equation Simulation of VS Labeling (V1.0). Zenodo
 
 ## References
 
-Most recent to oldest:
+Most recent to oldest (last updated 2022):
 
 1. Woods JG, Wong EC, Shin DD, Bolar D. A general framework for eddy current minimization in Velocity Selective Arterial Spin Labeling. In: Proceedings of the 29th Annual Meeting of the ISMRM, Virtual. 2021:2720. https://cds.ismrm.org/protected/21MPresentations/abstracts/2720.html.
 2. Zhao Z, Lee NG, Nayak KS. RF Pulse Designs for Velocity-Selective MRA at Low Field Strengths. In: Proceedings of the 29th Annual Meeting of the ISMRM, Virtual. 2021:3961. https://cds.ismrm.org/protected/21MPresentations/abstracts/3961.html.
